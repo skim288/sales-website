@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from '@mui/material'
-import { indigo, amber } from '@mui/material/colors'
+import { useEffect } from 'react';
+import { green, darkgreen } from '@mui/material/colors'
 import { createTheme } from "@mui/material/styles";
 
 import NavBar from './components/NavBar';
@@ -16,8 +17,8 @@ import LoginPage from './pages/LoginPage'
 // in this case, we only change the color scheme
 export const theme = createTheme({
   palette: {
-    primary: indigo,
-    secondary: amber,
+    primary: green,
+    secondary: green,
   },
 });
 
@@ -26,6 +27,9 @@ export const theme = createTheme({
 // our application, with each Route component representing a page and the common
 // NavBar component allowing us to navigate between pages (with hyperlinks)
 export default function App() {
+  useEffect(() => {
+    document.title = "Sales Dashboard"; // Change this to your desired app title
+  }, []);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

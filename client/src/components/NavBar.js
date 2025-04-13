@@ -36,7 +36,7 @@ export default function NavBar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <NavText href="/" text="SWIFTIFY" isMain />
+          <NavText href="/" text="Sales Dashboard" isMain />
           <NavText href="/sales_dashboard" text="Sales Dashboard" />
           <NavText href="/customer_dashboard" text="Customer Dashboard" />
         </Toolbar>
