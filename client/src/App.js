@@ -1,20 +1,20 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { CssBaseline, ThemeProvider } from '@mui/material'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { CssBaseline, ThemeProvider } from '@mui/material';
 import { useEffect } from 'react';
-import { green, darkgreen } from '@mui/material/colors'
+import { green } from '@mui/material/colors';
 import { createTheme } from "@mui/material/styles";
 
+import { AuthProvider, useAuth } from './components/AuthContext';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import AlbumsPage from './pages/AlbumsPage';
 import SongsPage from './pages/SongsPage';
-import AlbumInfoPage from './pages/AlbumInfoPage'
-import SalesPage from './pages/SalesPage'
-import CustomerPage from './pages/CustomerPage'
-import LoginPage from './pages/LoginPage'
+import AlbumInfoPage from './pages/AlbumInfoPage';
+import SalesPage from './pages/SalesPage';
+import CustomerPage from './pages/CustomerPage';
+import LoginPage from './pages/LoginPage';
 
-// createTheme enables you to customize the look and feel of your app past the default
-// in this case, we only change the color scheme
+// Create theme
 export const theme = createTheme({
   palette: {
     primary: green,
@@ -22,26 +22,59 @@ export const theme = createTheme({
   },
 });
 
-// App is the root component of our application and as children contain all our pages
-// We use React Router's BrowserRouter and Routes components to define the pages for
-// our application, with each Route component representing a page and the common
-// NavBar component allowing us to navigate between pages (with hyperlinks)
+// Protected route component
+const ProtectedRoute = ({ children }) => {
+  const { isLoggedIn } = useAuth();
+  
+  if (!isLoggedIn) {
+    // Redirect to login if not logged in
+    return <Navigate to="/" />;
+  }
+  
+  return children;
+};
+
+// App component with AuthProvider wrapper
 export default function App() {
   useEffect(() => {
-    document.title = "Sales Dashboard"; // Change this to your desired app title
+    document.title = "Sales Dashboard";
   }, []);
+  
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/sales_dashboard" element={<SalesPage />} />
-          <Route path="/albums/:album_id" element={<AlbumInfoPage />} />
-          <Route path="/customer_dashboard" element={<CustomerPage />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route 
+              path="/sales_dashboard" 
+              element={
+                <ProtectedRoute>
+                  <SalesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/albums/:album_id" 
+              element={
+                <ProtectedRoute>
+                  <AlbumInfoPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/customer_dashboard" 
+              element={
+                <ProtectedRoute>
+                  <CustomerPage />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }

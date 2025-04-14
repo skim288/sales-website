@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Container } from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import { useAuth } from "../components/AuthContext";
 
 const config = require('../config.json');
 
