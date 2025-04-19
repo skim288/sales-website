@@ -347,6 +347,34 @@ const search_songs = async function(req, res) {
   }
 }
 
+const searchCustomers = async function(req, res) {
+  const { firstname, lastname } = req.query;
+
+  // Case 2: Missing firstname or lastname
+  if (!firstname || !lastname) {
+    return res.status(400).json({ error: 'Both firstname and lastname must be provided.' });
+  }
+
+  const query = `
+    SELECT c.customerid, c.firstname, c.lastname, c.address, ci.cityname, ci.zipcode
+    FROM Customers c
+    JOIN Cities ci ON c.cityid = ci.cityid
+    WHERE LOWER(c.firstname) LIKE LOWER($1) AND LOWER(c.lastname) LIKE LOWER($2)
+  `;
+
+  const params = [`%${firstname}%`, `%${lastname}%`];
+
+  try {
+    const result = await connection.query(query, params);
+    // Case 3: Return empty array if no results
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
 module.exports = {
   author,
   random,
@@ -357,4 +385,5 @@ module.exports = {
   top_songs,
   top_albums,
   search_songs,
+  searchCustomers
 }
