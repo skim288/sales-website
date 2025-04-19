@@ -20,6 +20,8 @@ app.get('/top_songs', routes.top_songs);
 app.get('/top_albums', routes.top_albums);
 app.get('/search_songs', routes.search_songs);
 app.get('/customers/search', routes.searchCustomers); 
+app.get('/search_products', routes.search_products);
+app.get('/top_product_categories', routes.top_product_categories);
 
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)
