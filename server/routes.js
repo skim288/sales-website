@@ -374,22 +374,22 @@ const searchCustomers = async function(req, res) {
   }
 };
 
-// TOP PRODUCTS with option to filter by city
+// TOP PRODUCTS with option to filter by zipcode
 const top_products = async function (req, res) {
-  const city = req.query.city ?? "";
+  const zip = req.query.zip ?? "";
   // ALLOWS US TO FILTER BY DATE
-  const dateLow = req.query.city ?? ""; //replace '' with a default date here (look at datagrip format)
-  const dateHigh = req.query.city ?? ""; //replace '' with a default date here (look at datagrip format)
+  const dateLow = req.query.dateLow?? ""; //replace '' with a default date here (look at datagrip format)
+  const dateHigh = req.query.dateHigh ?? ""; //replace '' with a default date here (look at datagrip format)
 
-  // Top 5 products filtered by city
-  if (city) {
+  // Top 5 products filtered by zipcode
+  if (zip) {
     connection.query(
       `
       SELECT p.productid, p.productname, SUM(s.totalprice) AS total_sales
       FROM sales s JOIN products p ON s.productid=p.productid
             JOIN employees e ON e.emoployeeid=s.salespersonid
             JOIN cities c ON c.cityid=e.cityid
-      WHERE e.cityname ILIKE '%${city}%'
+      WHERE c.zipcode = '%${zip}%'
       GROUP BY p.productid, p.productname
       ORDER BY total_sales DESC
       LIMIT 5
@@ -404,7 +404,7 @@ const top_products = async function (req, res) {
       }
     );
 
-    // Top 5 products (NO CITY)
+    // Top 5 products (NO zipcode)
   } else {
     connection.query(
       `
@@ -429,10 +429,10 @@ const top_products = async function (req, res) {
 // TOP 5 PRODUCT CATEGORIES with option to filter by city
 // COMBINE THIS WITH THE SEARCH_PRODUCTS QUERY????
 const top_product_categories = async function (req, res) {
-  const city = req.query.city ?? "";
+  const zip = req.query.zip ?? "";
 
-  // top 5 product categories filtered by city
-  if (city) {
+  // top 5 product categories filtered by zipcode
+  if (zip) {
     connection.query(
       `
       SELECT ca.categoryid, ca.categoryname, SUM(s.totalprice) AS total_sales
@@ -440,7 +440,7 @@ const top_product_categories = async function (req, res) {
             JOIN categories ca ON ca.categoryid=p.categoryid
             JOIN employees e ON e.emoployeeid=s.salespersonid
             JOIN cities c ON c.cityid=e.cityid
-      WHERE e.cityname ILIKE '%${city}%'
+      WHERE c.zipcode = '%${zip}%'
       GROUP BY ca.categoryid, ca.categoryname
       ORDER BY total_sales DESC
       LIMIT 5
@@ -456,7 +456,7 @@ const top_product_categories = async function (req, res) {
       }
     );
 
-    // top 5 product categories (NO CITY)
+    // top 5 product categories (NO Zipcode)
   } else {
     connection.query(
       `
@@ -479,10 +479,10 @@ const top_product_categories = async function (req, res) {
 };
 
 const top_salesperson = async function (req, res) {
-  const city = req.query.city ?? "";
+  const zip = req.query.zip ?? "";
   const category = req.query.category ?? "";
 
-  if (!city && !category) {
+  if (!zip && !category) {
     connection.query(
       // returns the top salesperson per city (orders by total_sales desc, so topsalesperson in company is on top)
       `
@@ -506,17 +506,17 @@ const top_salesperson = async function (req, res) {
         }
       }
     );
-  } else if (city && !category) {
+  } else if (zip && !category) {
     connection.query(
       `
       SELECT *
       FROM(
-        SELECT ci.cityname,  e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
+        SELECT ci.zipcode,  e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
         FROM sales s JOIN employees e on s.salespersonid=e.employeeid
             JOIN cities ci ON e.cityid=ci.cityid
         GROUP BY ci.cityname, e.employeeid, e.firstname, e.lastname
       ) ranked
-      WHERE rank_in_city=1 AND cityname ILIKE '%${city}%'
+      WHERE rank_in_city=1 AND zipcode = '%${zip}%'
     `,
       (err, data) => {
         if (err) {
@@ -527,7 +527,7 @@ const top_salesperson = async function (req, res) {
         }
       }
     );
-  } else if (!city && category) {
+  } else if (!zip[] && category) {
     connection.query(
       `
       SELECT *
@@ -556,7 +556,7 @@ const top_salesperson = async function (req, res) {
       `
       SELECT *
       FROM(
-        SELECT ci.cityname, c.categoryname, e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY c.categoryid ORDER BY SUM(s.totalprice) DESC) AS rank_in_category
+        SELECT ci.zipcode, c.categoryname, e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY c.categoryid ORDER BY SUM(s.totalprice) DESC) AS rank_in_category
         FROM sales s JOIN employees e on s.salespersonid=e.employeeid
             JOIN cities ci ON e.cityid=ci.cityid
             JOIN products p ON s.productid=p.productid
@@ -564,7 +564,7 @@ const top_salesperson = async function (req, res) {
         WHERE categoryname ILIKE '%${category}%
         GROUP BY c.categoryname, e.employeeid, e.firstname, e.lastname
       ) ranked
-      WHERE rank_in_category=1 AND cityname ILIKE '%${city}%'
+      WHERE rank_in_category=1 AND zipcode = '%${zip}%'
     `,
       (err, data) => {
         if (err) {
@@ -578,6 +578,50 @@ const top_salesperson = async function (req, res) {
   }
 };
 
+
+const highest_households = async function (req, res) {
+  const zip = req.query.zip?? "";
+  
+  // number of household based on selected city
+  if (zip) {
+    connection.query(
+      `
+      SELECT c.cityname, c.zipcode, SUM(z.households) AS household_count
+      FROM zipcodedemographics z JOIN cities c on z.zip=c.zipcode
+      WHERE c.zipcode = '%${zip}%'
+      GROUP BY c.cityname, c.zipcode
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+
+    // top 10 cities with the highest number of household
+  } else if(!zip){
+    connection.query(
+      `
+      SELECT c.cityname, c.zipcode, SUM(z.households) AS household_count
+      FROM zipcodedemographics z JOIN cities c on z.zip=c.zipcode
+      GROUP BY c.cityname, c.zipcode
+      ORDER BY householde_count DESC
+      LIMIT 10
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+  }
+};
 
 module.exports = {
   author,
@@ -593,4 +637,5 @@ module.exports = {
   top_products,
   top_product_categories,
   top_salesperson,
+  highest_households,
 }
