@@ -374,74 +374,210 @@ const searchCustomers = async function(req, res) {
   }
 };
 
-const search_products = async function(req, res) {
-  const city = req.query.city ?? '';
-  const dateLow = req.query.city ?? ''; //replace '' with a default date here (look at datagrip format)
+// TOP PRODUCTS with option to filter by city
+const top_products = async function (req, res) {
+  const city = req.query.city ?? "";
+  // ALLOWS US TO FILTER BY DATE
+  const dateLow = req.query.city ?? ""; //replace '' with a default date here (look at datagrip format)
+  const dateHigh = req.query.city ?? ""; //replace '' with a default date here (look at datagrip format)
 
-  if(city){
-    connection.query(`
-      SELECT *
-      FROM (SELECT p.productname AS Product_Name, 
-            FROM sales s JOIN products p ON s.productid=p.productid
-                  JOIN employees e ON e.emoployeeid=s.salespersonid
-                  JOIN cities c ON c.cityid=e.cityid
-            WHERE e.cityname ILIKE '%${city}
-            GROUP BY )
-    `,  (err, data) => {
-      if(err){
-        console.log(err);
-        res.json([]);
-      } else{
-        res.json(data.rows);
+  // Top 5 products filtered by city
+  if (city) {
+    connection.query(
+      `
+      SELECT p.productid, p.productname, SUM(s.totalprice) AS total_sales
+      FROM sales s JOIN products p ON s.productid=p.productid
+            JOIN employees e ON e.emoployeeid=s.salespersonid
+            JOIN cities c ON c.cityid=e.cityid
+      WHERE e.cityname ILIKE '%${city}%'
+      GROUP BY p.productid, p.productname
+      ORDER BY total_sales DESC
+      LIMIT 5
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
       }
-    })
+    );
 
-  } else{
-    connection.query(`
-      SELECT *
-      FROM (SELECT p.productname AS Product_Name, 
-            FROM sales s JOIN products p ON s.productid=p.productid
-                  JOIN employees e ON e.emoployeeid=s.salespersonid
-                  JOIN cities c ON c.cityid=e.cityid
-            WHERE e.cityname ILIKE '%${city}
-            GROUP BY )
-    `,  (err, data) => {
-      if(err){
-        console.log(err);
-        res.json([]);
-      } else{
-        res.json(data.rows);
+    // Top 5 products (NO CITY)
+  } else {
+    connection.query(
+      `
+      SELECT p.productid, p.productname, SUM(s.totalprice) AS total_sales
+      FROM sales s JOIN products p ON s.productid=p.productid
+      GROUP BY p.productid, p.productname
+      ORDER BY total_sales DESC
+      LIMIT 5
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
       }
-    })
+    );
   }
+};
 
-}
+// TOP 5 PRODUCT CATEGORIES with option to filter by city
+// COMBINE THIS WITH THE SEARCH_PRODUCTS QUERY????
+const top_product_categories = async function (req, res) {
+  const city = req.query.city ?? "";
 
+  // top 5 product categories filtered by city
+  if (city) {
+    connection.query(
+      `
+      SELECT ca.categoryid, ca.categoryname, SUM(s.totalprice) AS total_sales
+      FROM sales s JOIN products p ON s.productid=p.productid
+            JOIN categories ca ON ca.categoryid=p.categoryid
+            JOIN employees e ON e.emoployeeid=s.salespersonid
+            JOIN cities c ON c.cityid=e.cityid
+      WHERE e.cityname ILIKE '%${city}%'
+      GROUP BY ca.categoryid, ca.categoryname
+      ORDER BY total_sales DESC
+      LIMIT 5
+    `,
 
-// TOP PRODUCT CATEGORIES with option to filter by city
-const top_product_categories = async function(req, res) {
-  const city = req.query.city ?? '';
-
-  if(city){
-    connection.query(`
-      SELECT *
-      FROM (SELECT p.productname AS Product_Name, 
-            FROM sales s JOIN products p ON s.productid=p.productid
-                  JOIN employees e ON e.emoployeeid=s.salespersonid
-                  JOIN cities c ON c.cityid=e.cityid
-            WHERE e.cityname ILIKE '%${city}
-            GROUP BY )
-    `,  (err, data) => {
-      if(err){
-        console.log(err);
-        res.json([]);
-      } else{
-        res.json(data.rows);
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
       }
-    })
-  }
+    );
 
-}
+    // top 5 product categories (NO CITY)
+  } else {
+    connection.query(
+      `
+      SELECT p.productname, SUM(s.totalprice) AS total_sales
+      FROM sales s JOIN products p ON s.productid=p.productid
+      GROUP BY p.productname
+      ORDER BY total_sales DESC
+      LIMIT 5
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+  }
+};
+
+const top_salesperson = async function (req, res) {
+  const city = req.query.city ?? "";
+  const category = req.query.category ?? "";
+
+  if (!city && !category) {
+    connection.query(
+      // returns the top salesperson per city (orders by total_sales desc, so topsalesperson in company is on top)
+      `
+      SELECT *
+      FROM(
+        SELECT ci.cityname,  e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
+        FROM sales s JOIN employees e on s.salespersonid=e.employeeid
+            JOIN cities ci ON e.cityid=ci.cityid
+        GROUP BY ci.cityname, e.employeeid, e.firstname, e.lastname
+      ) ranked
+      WHERE rank_in_city=1
+      ORDER BY Total_Sales DESC
+      LIMIT 5
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+  } else if (city && !category) {
+    connection.query(
+      `
+      SELECT *
+      FROM(
+        SELECT ci.cityname,  e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
+        FROM sales s JOIN employees e on s.salespersonid=e.employeeid
+            JOIN cities ci ON e.cityid=ci.cityid
+        GROUP BY ci.cityname, e.employeeid, e.firstname, e.lastname
+      ) ranked
+      WHERE rank_in_city=1 AND cityname ILIKE '%${city}%'
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+  } else if (!city && category) {
+    connection.query(
+      `
+      SELECT *
+      FROM(
+        SELECT c.categoryname, e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY c.categoryid ORDER BY SUM(s.totalprice) DESC) AS rank_in_category
+        FROM sales s JOIN employees e on s.salespersonid=e.employeeid
+            JOIN products p ON s.productid=p.productid
+            JOIN categories c on p.categoryid=c.categoryid
+        GROUP BY c.categoryname, e.employeeid, e.firstname, e.lastname
+      ) ranked
+      WHERE rank_in_category=1 AND categoryname ILIKE '%${category}%'
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+
+    // User input for both city and product category.
+  } else {
+    connection.query(
+      `
+      SELECT *
+      FROM(
+        SELECT ci.cityname, c.categoryname, e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY c.categoryid ORDER BY SUM(s.totalprice) DESC) AS rank_in_category
+        FROM sales s JOIN employees e on s.salespersonid=e.employeeid
+            JOIN cities ci ON e.cityid=ci.cityid
+            JOIN products p ON s.productid=p.productid
+            JOIN categories c on p.categoryid=c.categoryid
+        WHERE categoryname ILIKE '%${category}%
+        GROUP BY c.categoryname, e.employeeid, e.firstname, e.lastname
+      ) ranked
+      WHERE rank_in_category=1 AND cityname ILIKE '%${city}%'
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+  }
+};
+
 
 module.exports = {
   author,
@@ -454,6 +590,7 @@ module.exports = {
   top_albums,
   search_songs,
   searchCustomers,
+  top_products,
   top_product_categories,
-  search_products,
+  top_salesperson,
 }
