@@ -623,6 +623,50 @@ const highest_households = async function (req, res) {
   }
 };
 
+const household_mean_income = async function (req, res) {
+  const zip = req.query.zip?? "";
+  
+  // mean household income based on selected city
+  if (zip) {
+    connection.query(
+      `
+      SELECT c.cityname, c.zipcode, SUM(z.households) AS household_count
+      FROM zipcodedemographics z JOIN cities c on z.zip=c.zipcode
+      WHERE c.zipcode = '%${zip}%'
+      GROUP BY c.cityname, c.zipcode
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+
+    // DEFAULT: top 10 cities with the highest number of household 
+  } else if(!zip){
+    connection.query(
+      `
+      SELECT c.cityname, c.zipcode, SUM(z.households) AS household_count
+      FROM zipcodedemographics z JOIN cities c on z.zip=c.zipcode
+      GROUP BY c.cityname, c.zipcode
+      ORDER BY householde_count DESC
+      LIMIT 10
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+  }
+};
+
 module.exports = {
   author,
   random,
@@ -638,4 +682,5 @@ module.exports = {
   top_product_categories,
   top_salesperson,
   highest_households,
+  household_mean_income,
 }
