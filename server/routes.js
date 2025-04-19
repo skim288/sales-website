@@ -374,6 +374,74 @@ const searchCustomers = async function(req, res) {
   }
 };
 
+const search_products = async function(req, res) {
+  const city = req.query.city ?? '';
+  const dateLow = req.query.city ?? ''; //replace '' with a default date here (look at datagrip format)
+
+  if(city){
+    connection.query(`
+      SELECT *
+      FROM (SELECT p.productname AS Product_Name, 
+            FROM sales s JOIN products p ON s.productid=p.productid
+                  JOIN employees e ON e.emoployeeid=s.salespersonid
+                  JOIN cities c ON c.cityid=e.cityid
+            WHERE e.cityname ILIKE '%${city}
+            GROUP BY )
+    `,  (err, data) => {
+      if(err){
+        console.log(err);
+        res.json([]);
+      } else{
+        res.json(data.rows);
+      }
+    })
+
+  } else{
+    connection.query(`
+      SELECT *
+      FROM (SELECT p.productname AS Product_Name, 
+            FROM sales s JOIN products p ON s.productid=p.productid
+                  JOIN employees e ON e.emoployeeid=s.salespersonid
+                  JOIN cities c ON c.cityid=e.cityid
+            WHERE e.cityname ILIKE '%${city}
+            GROUP BY )
+    `,  (err, data) => {
+      if(err){
+        console.log(err);
+        res.json([]);
+      } else{
+        res.json(data.rows);
+      }
+    })
+  }
+
+}
+
+
+// TOP PRODUCT CATEGORIES with option to filter by city
+const top_product_categories = async function(req, res) {
+  const city = req.query.city ?? '';
+
+  if(city){
+    connection.query(`
+      SELECT *
+      FROM (SELECT p.productname AS Product_Name, 
+            FROM sales s JOIN products p ON s.productid=p.productid
+                  JOIN employees e ON e.emoployeeid=s.salespersonid
+                  JOIN cities c ON c.cityid=e.cityid
+            WHERE e.cityname ILIKE '%${city}
+            GROUP BY )
+    `,  (err, data) => {
+      if(err){
+        console.log(err);
+        res.json([]);
+      } else{
+        res.json(data.rows);
+      }
+    })
+  }
+
+}
 
 module.exports = {
   author,
@@ -385,5 +453,7 @@ module.exports = {
   top_songs,
   top_albums,
   search_songs,
-  searchCustomers
+  searchCustomers,
+  top_product_categories,
+  search_products,
 }
