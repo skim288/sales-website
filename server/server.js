@@ -24,6 +24,8 @@ app.get('/top_products', routes.top_products);
 app.get('/top_product_categories', routes.top_product_categories);
 app.get('/top_salesperson', routes.top_salesperson);
 app.get('/highest_households', routes.highest_households);
+app.get('/household_mean_income', routes.household_mean_income);
+
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)
 });
