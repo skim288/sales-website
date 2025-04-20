@@ -38,6 +38,7 @@ const ProtectedRoute = ({ children }) => {
 export default function App() {
   useEffect(() => {
     document.title = "Sales Dashboard";
+    document.title = "Customer Search";
   }, []);
   
   return (
