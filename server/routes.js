@@ -486,15 +486,11 @@ const top_salesperson = async function (req, res) {
     connection.query(
       // returns the top salesperson per city (orders by total_sales desc, so topsalesperson in company is on top)
       `
-      SELECT *
-      FROM(
-        SELECT ci.cityname,  e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
-        FROM sales s JOIN employees e on s.salespersonid=e.employeeid
-            JOIN cities ci ON e.cityid=ci.cityid
-        GROUP BY ci.cityname, e.employeeid, e.firstname, e.lastname
-      ) ranked
-      WHERE rank_in_city=1
-      ORDER BY Total_Sales DESC
+      SELECT ci.cityname,  e.employeeid, e.firstname, e.lastname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
+      FROM sales s JOIN employees e on s.salespersonid=e.employeeid
+          JOIN cities ci ON e.cityid=ci.cityid
+      GROUP BY ci.cityname, e.employeeid, e.firstname, e.lastname
+      ORDER BY total_sales DESC
       LIMIT 5
     `,
       (err, data) => {
@@ -509,14 +505,13 @@ const top_salesperson = async function (req, res) {
   } else if (zip && !category) {
     connection.query(
       `
-      SELECT *
-      FROM(
-        SELECT ci.zipcode,  e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
-        FROM sales s JOIN employees e on s.salespersonid=e.employeeid
-            JOIN cities ci ON e.cityid=ci.cityid
-        GROUP BY ci.cityname, e.employeeid, e.firstname, e.lastname
-      ) ranked
-      WHERE rank_in_city=1 AND zipcode = '%${zip}%'
+      SELECT ci.zipcode, e.employeeid, e.firstname, e.lastname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
+      FROM sales s JOIN employees e on s.salespersonid=e.employeeid
+          JOIN cities ci ON e.cityid=ci.cityid
+      WHERE zipcode = '${zip}'
+      GROUP BY ci.zipcode, ci.cityname, e.employeeid, e.firstname, e.lastname
+      ORDER BY total_sales DESC
+      LIMIT 5
     `,
       (err, data) => {
         if (err) {
@@ -527,18 +522,17 @@ const top_salesperson = async function (req, res) {
         }
       }
     );
-  } else if (!zip[] && category) {
+  } else if (!zip && category) {
     connection.query(
       `
-      SELECT *
-      FROM(
-        SELECT c.categoryname, e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY c.categoryid ORDER BY SUM(s.totalprice) DESC) AS rank_in_category
-        FROM sales s JOIN employees e on s.salespersonid=e.employeeid
-            JOIN products p ON s.productid=p.productid
-            JOIN categories c on p.categoryid=c.categoryid
-        GROUP BY c.categoryname, e.employeeid, e.firstname, e.lastname
-      ) ranked
-      WHERE rank_in_category=1 AND categoryname ILIKE '%${category}%'
+      SELECT c.categoryname, e.employeeid, e.firstname, e.lastname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales, RANK() OVER (PARTITION BY c.categoryid ORDER BY SUM(s.totalprice) DESC) AS rank_in_category
+      FROM sales s JOIN employees e on s.salespersonid=e.employeeid
+          JOIN products p ON s.productid=p.productid
+          JOIN categories c on p.categoryid=c.categoryid
+      WHERE categoryname ILIKE '${category}'
+      GROUP BY c.categoryname, e.employeeid, e.firstname, e.lastname, c.categoryid
+      ORDER BY total_sales DESC
+      LIMIT 5
     `,
       (err, data) => {
         if (err) {
@@ -554,17 +548,15 @@ const top_salesperson = async function (req, res) {
   } else {
     connection.query(
       `
-      SELECT *
-      FROM(
-        SELECT ci.zipcode, c.categoryname, e.employeeid, e.firstname, e.lastname, SUM(s.totalprice) AS Total_Sales, RANK() OVER (PARTITION BY c.categoryid ORDER BY SUM(s.totalprice) DESC) AS rank_in_category
-        FROM sales s JOIN employees e on s.salespersonid=e.employeeid
-            JOIN cities ci ON e.cityid=ci.cityid
-            JOIN products p ON s.productid=p.productid
-            JOIN categories c on p.categoryid=c.categoryid
-        WHERE categoryname ILIKE '%${category}%
-        GROUP BY c.categoryname, e.employeeid, e.firstname, e.lastname
-      ) ranked
-      WHERE rank_in_category=1 AND zipcode = '%${zip}%'
+      SELECT e.employeeid, e.firstname, e.lastname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales, RANK() OVER (PARTITION BY c.categoryid ORDER BY SUM(s.totalprice) DESC) AS rank_in_category
+      FROM sales s JOIN employees e on s.salespersonid=e.employeeid
+          JOIN cities ci ON e.cityid=ci.cityid
+          JOIN products p ON s.productid=p.productid
+          JOIN categories c on p.categoryid=c.categoryid
+      WHERE c.categoryname ILIKE 'Dairy' AND zipcode = '81251'
+      GROUP BY e.employeeid, e.firstname, e.lastname, c.categoryid
+      ORDER BY total_sales DESC
+      LIMIT 5
     `,
       (err, data) => {
         if (err) {
