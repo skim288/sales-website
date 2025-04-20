@@ -13,6 +13,7 @@ import AlbumInfoPage from './pages/AlbumInfoPage';
 import SalesPage from './pages/SalesPage';
 import CustomerPage from './pages/CustomerPage';
 import LoginPage from './pages/LoginPage';
+import SalespersonPage from './pages/SalespersonPage';
 
 // Create theme
 export const theme = createTheme({
@@ -53,7 +54,7 @@ export default function App() {
               path="/sales_dashboard" 
               element={
                 <ProtectedRoute>
-                  <SalesPage />
+                  <SalespersonPage />
                 </ProtectedRoute>
               } 
             />
