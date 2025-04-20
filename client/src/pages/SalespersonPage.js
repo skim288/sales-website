@@ -20,6 +20,11 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField     from '@mui/material/TextField';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+
 
 import SongCard from '../components/SongCard';
 import { formatDuration } from '../helpers/formatter';
@@ -38,6 +43,10 @@ export default function SongsPage() {
           .then(resJson => setSalesperson(resJson));
       }, []);
     const search = () => {
+        // let url = `http://${config.server_host}:${config.server_port}/top_salesperson?zip=${zip}`;
+        // if (category) {
+        //     url += `&category=${encodeURIComponent(category)}`;
+        // }
         fetch(`http://${config.server_host}:${config.server_port}/top_salesperson?zip=${zip}` +
             `&category=${category}`
         )
@@ -61,11 +70,38 @@ export default function SongsPage() {
           <h2>Search</h2>
           <Grid container spacing={6}>
             <Grid item xs={8}>
-              <TextField label='Salesperson name' value={zip} onChange={(e) => setZip(e.target.value)} style={{ width: "100%" }}/>
+              <TextField label='ZIP code' value={zip} onChange={(e) => setZip(e.target.value)} style={{ width: "100%" }}/>
             </Grid>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+
+          
+        <Grid item xs={12} md={4}>
+        <FormControl fullWidth>
+            <InputLabel id="category-label">Product Category</InputLabel>
+            <Select
+            labelId="category-label"
+            value={category}
+            label="Product Category"
+            onChange={e => setCategory(e.target.value)}
+            >
+            {/* “None” choice */}
+            <MenuItem value="">
+                <Checkbox checked={category === ''} sx={{ p: 0, mr: 1 }} />
+                <ListItemText primary="— None —" />
+            </MenuItem>
+            {['Confections', 'Shell Fish', 'Cereals', 'Dairy', 'Beverages', 'Seafood',
+                'Meat', 'Grain', 'Poultry', 'Snails', 'Produce'].map(item => (
+                <MenuItem key={item} value={item}>
+                <Checkbox checked={category === item} sx={{ p: 0, mr: 1 }} />
+                <ListItemText primary={item} />
+                </MenuItem>
+            ))}
+            </Select>
+        </FormControl>
+        </Grid>
+
+          {/* <Grid item xs={12} md={4}>
             <Autocomplete
                 freeSolo
                 options={categoryOptions}
@@ -80,7 +116,7 @@ export default function SongsPage() {
                 />
                 )}
             />
-            </Grid>
+            </Grid> */}
             
             <Grid item xs={12} md={4}>
 
