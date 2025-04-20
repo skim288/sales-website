@@ -48,7 +48,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route 
-              path="/sales_dashboard" 
+              path="/salesperson_page" 
               element={
                 <ProtectedRoute>
                   <SalespersonPage />
