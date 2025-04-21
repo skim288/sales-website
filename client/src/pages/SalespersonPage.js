@@ -62,9 +62,7 @@ export default function SongsPage() {
         'Books',
 
       ];
-
-    
-      
+          
     return (
         <Container>
           <h2>Search</h2>

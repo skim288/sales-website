@@ -1,7 +1,6 @@
-import { AppBar, Container, Toolbar, Typography, Button, Box } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { AppBar, Container, Toolbar, Typography, Button, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
-import { useNavigate } from "react-router-dom";
 
 // NavText component from your original code
 const NavText = ({ href, text, isMain }) => {
@@ -24,8 +23,35 @@ const NavText = ({ href, text, isMain }) => {
   );
 };
 
+// Home button component
+const HomeButton = ({ href }) => {
+  const navigate = useNavigate();
+  
+  return (
+    <Box
+      component="div"
+      sx={{
+        mr: 2,
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center'
+      }}
+      onClick={() => navigate(href)}
+    >
+      <img 
+        src="/home-but.png" 
+        alt="Home" 
+        style={{ 
+          height: '28px',
+          width: 'auto'
+        }} 
+      />
+    </Box>
+  );
+};
+
 export default function NavBar() {
-  const { isLoggedIn, userEmail, logout } = useAuth();
+  const { isLoggedIn, userEmail, userName, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -37,10 +63,15 @@ export default function NavBar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* Keep your original navigation structure */}
-          <NavText href="/" text="Sales Dashboard" isMain />
-          <NavText href="/sales_dashboard" text="Sales Dashboard" />
-          <NavText href="/customer_dashboard" text="Customer Dashboard" />
+          {/* Replace login text with home button */}
+          <HomeButton href="/" />
+
+          {/* Keep the rest of your navigation structure */}
+          <NavText href="/salesperson_page" text="Sales Person Page" />
+          <NavText href="/household_page" text="Household Page" />
+          <NavText href="/top_products_page" text="Top Products Page" />
+
+          <NavText href="/customer_dashboard" text="Customer Page" />
           
           {/* Add the login info and logout button */}
           <Box sx={{ flexGrow: 1 }} />
@@ -48,7 +79,7 @@ export default function NavBar() {
           {isLoggedIn ? (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="body2" sx={{ mr: 2 }}>
-                Logged in as: {userEmail}
+                Welcome, {userName || userEmail}
               </Typography>
               <Button 
                 color="inherit" 
@@ -60,7 +91,7 @@ export default function NavBar() {
                 Logout
               </Button>
             </Box>
-          ) : (
+          ) : ( 
             <Button color="inherit" onClick={() => navigate('/')}>
               Login
             </Button>
@@ -70,50 +101,3 @@ export default function NavBar() {
     </AppBar>
   );
 }
-/*
-// The hyperlinks in the NavBar contain a lot of repeated formatting code so a
-// helper component NavText local to the file is defined to prevent repeated code.
-function NavText({ href, text, isMain }) {
-  return (
-    <Typography
-      variant={isMain ? "h5" : "h7"}
-      noWrap
-      style={{
-        marginRight: "30px",
-        fontFamily: "monospace",
-        fontWeight: 700,
-        letterSpacing: ".3rem",
-      }}
-    >
-      <NavLink
-        to={href}
-        style={{
-          color: "inherit",
-          textDecoration: "none",
-        }}
-      >
-        {text}
-      </NavLink>
-    </Typography>
-  );
-}
-
-// Here, we define the NavBar. Note that we heavily leverage MUI components
-// to make the component look nice. Feel free to try changing the formatting
-// props to how it changes the look of the component.
-export default function NavBar() {
-  return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <NavText href="/" text="Sales Dashboard" isMain />
-          <NavText href="/salesperson_page" text="Salesperson" />
-          <NavText href="/household_page" text="Household" />
-          <NavText href="/top_products_page" text="Products" />
-          <NavText href="/customer_dashboard" text="Customer Dashboard" />
-        </Toolbar>
-      </Container>
-    </AppBar>
-  );
-}
-*/

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { useEffect } from 'react';
 import { green } from '@mui/material/colors';
@@ -28,17 +28,40 @@ const ProtectedRoute = ({ children }) => {
   
   if (!isLoggedIn) {
     // Redirect to login if not logged in
+    return <Navigate to="/auth" />;
+  }
+  return children;
+};
+
+// Login route component - redirects to home if already logged in
+const LoginRoute = ({ children }) => {
+  const { isLoggedIn } = useAuth();
+  
+  if (isLoggedIn) {
+    // Redirect to home if already logged in
     return <Navigate to="/" />;
   }
   
   return children;
 };
 
+// NavBar wrapper that only displays on non-login pages
+const ConditionalNavBar = () => {
+  const location = useLocation();
+  const { isLoggedIn } = useAuth();
+  
+  // Don't show navbar on auth page (path "/auth") or if not logged in
+  if (location.pathname === "/auth" || !isLoggedIn) {
+    return null;
+  }
+  
+  return <NavBar />;
+};
+
 // App component with AuthProvider wrapper
 export default function App() {
   useEffect(() => {
     document.title = "Sales Dashboard";
-    document.title = "Customer Search";
   }, []);
   
   return (
@@ -46,9 +69,30 @@ export default function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter>
-          <NavBar />
+          {/* NavBar is now conditionally rendered inside the Router */}
+          <ConditionalNavBar />
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            {/* Login page - redirects to home if already logged in */}
+            <Route 
+              path="/auth" 
+              element={
+                <LoginRoute>
+                  <LoginPage />
+                </LoginRoute>
+              } 
+            />
+            
+            {/* Home page - protected, only accessible when logged in */}
+            <Route 
+              path="/" 
+              element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Sales dashboard page */}
             <Route 
               path="/salesperson_page" 
               element={
@@ -57,7 +101,6 @@ export default function App() {
                 </ProtectedRoute>
               } 
             />
-              
             <Route 
               path="/household_page" 
               element={
@@ -77,7 +120,7 @@ export default function App() {
             } 
           />
 
-              
+            
             <Route 
               path="/customer_dashboard" 
               element={

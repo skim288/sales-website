@@ -728,6 +728,44 @@ const household_mean_income = async function (req, res) {
   }
 };
 
+const search_employee_email = async function(req, res) {
+  const email = req.query.email ?? "";
+
+  // Case 2: Missing Email
+  if (!email) {
+    return res.status(400).json({ error: 'Email must be provided to return an Employee first and last name.' });
+  }
+
+  // Check if it's a Penn email
+  const isPennEmail = email.toLowerCase().endsWith('upenn.edu');
+
+  try {
+    // If it's a Penn email, we can handle it differently
+    if (isPennEmail) {
+        // Extract username (part before @)
+        const username = email.split('@')[0];
+        // Capitalize first letter of username to make it look nicer
+        const formattedUsername = username.charAt(0).toUpperCase() + username.slice(1);
+        res.json([{ fullname: formattedUsername }]);
+    } else {
+      // Regular email lookup - only return results if found in database
+      const query = `SELECT CONCAT(firstname, ' ', lastname) AS fullname FROM employees WHERE email = LOWER($1)`;
+      
+      connection.query(query, [email], (err, results) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Internal server error' });
+        }
+        res.json(results.rows);
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Unexpected error occurred' });
+  }
+};
+
+
 module.exports = {
   author,
   random,
@@ -744,4 +782,5 @@ module.exports = {
   top_salesperson,
   highest_households,
   household_mean_income,
+  search_employee_email
 }

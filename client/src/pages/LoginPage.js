@@ -1,34 +1,62 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SocialLogin from "../components/SocialLogin";
 import InputField from "../components/InputField";
 import { useAuth } from "../components/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const [loginError, setLoginError] = useState("");
+  const { login, isLoading, error } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginError("");
     
-    // In a real app, you'd validate credentials here
-    // For this example, we'll just log in with the email
-    login(email);
+    if (!email) {
+      setLoginError("Email is required");
+      return;
+    }
     
-    // Navigate to the dashboard after login
-    navigate("/sales_dashboard");
+    try {
+      // Call the login function from AuthContext
+      const result = await login(email, password);
+      
+      if (result.success) {
+        // Navigate to the home page after successful login
+        navigate("/");
+      } else {
+        // Display error from failed login
+        setLoginError(result.error);
+      }
+    } catch (err) {
+      setLoginError("An unexpected error occurred. Please try again.");
+    }
   };
+  // NOTE if you want to include the Gmail and Apple login here's the script associated with it (put after Employee Login h2)
+  // <h2 className="form-title">Log in with</h2>
+  // <SocialLogin />
+
+  // <p className="separator">
+  //   <span>or</span>
+  // </p>
+
+  // <form 
 
   return (
     <div className="login-container">
-      <h2 className="form-title">Log in with</h2>
-      <SocialLogin />
-
+      <h2 className="form-title">Employee Log in</h2>
       <p className="separator">
-        <span>or</span>
+        <span>You can also put in your Penn Email!</span>
       </p>
+
+      {(loginError || error) && (
+        <div className="error-message">
+          {loginError || error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="login-form">
         <InputField 
@@ -44,49 +72,14 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button type="submit" className="login-button">
-          Log In
+        <button 
+          type="submit" 
+          className="login-button"
+          disabled={isLoading}
+        >
+          {isLoading ? "Logging in..." : "Log In"}
         </button>
       </form>
     </div>
   );
 }
-
-
-
-/*
-export default function LoginPage() {
-  return (
-    <div className="login-container">
-      <h2 className="form-title">Log in with</h2>
-      <SocialLogin />
-
-      <p className="separator">
-        <span>or</span>
-      </p>
-
-      <form action="#" className="login-form">
-        <InputField type="email" placeholder="Email address" />
-        <InputField type="password" placeholder="Password" />
-
-
-        <button type="submit" className="login-button">
-          Log In
-        </button>
-      </form>
-
-    </div>
-  );
-}
-     // Removed from the login box
-        <a href="#" className="forgot-password-link">
-          Forgot password?
-        </a>
-      <p className="signup-prompt">
-        Don&apos;t have an account?{" "}
-        <a href="#" className="signup-link">
-          Sign up
-        </a>
-      </p>
-
-*/

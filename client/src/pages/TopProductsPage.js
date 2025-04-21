@@ -47,7 +47,7 @@ export default function TopProductsPage() {
         `&year=${year}`
     )
       .then((res) => res.json())
-      .then((resJson) => setHousehold(resJson));
+      .then((resJson) => setProducts(resJson));
   };
 
   return (

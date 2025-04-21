@@ -1,13 +1,15 @@
 import { useState } from "react";
 
-
-
 export default function InputField({ type, placeholder, icon, value, onChange }) {
   // State to toggle password visibility
   const [isPasswordShown, setIsPasswordShown] = useState(false);
 
   return (
-    <div className="input-wrapper">
+    <div className="input-wrapper" style={{ 
+      position: 'relative',
+      marginBottom: '16px',
+      width: '100%'
+    }}>
       <input
         type={isPasswordShown ? "text" : type}
         placeholder={placeholder}
@@ -15,43 +17,37 @@ export default function InputField({ type, placeholder, icon, value, onChange })
         value={value}
         onChange={onChange}
         required
+        style={{
+          width: '100%',
+          padding: '12px',
+          borderRadius: '4px',
+          border: '1px solid #4CAF50',
+          fontSize: '16px',
+          paddingRight: type === 'password' ? '40px' : '12px'
+        }}
       />
-      <i className="material-symbols-rounded">{icon}</i>
       {type === "password" && (
-        <i
+        <div
           onClick={() => setIsPasswordShown((prevState) => !prevState)}
-          className="material-symbols-rounded eye-icon"
+          style={{ 
+            position: 'absolute',
+            right: '12px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            cursor: 'pointer',
+            zIndex: 1
+          }}
         >
-          {isPasswordShown ? "visibility" : "visibility_off"}
-        </i>
+          <img 
+            src={isPasswordShown ? "/password-shown.png" : "/password-hidden.png"} 
+            alt={isPasswordShown ? "Hide password" : "Show password"}
+            style={{ 
+              width: '24px',
+              height: '24px'
+            }}
+          />
+        </div>
       )}
     </div>
   );
 }
-
-/*
-export default function InputField({ type, placeholder, icon }) {
-  // State to toggle password visibility
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
-
-  return (
-    <div className="input-wrapper">
-      <input
-        type={isPasswordShown ? "text" : type}
-        placeholder={placeholder}
-        className="input-field"
-        required
-      />
-      <i className="material-symbols-rounded">{icon}</i>
-      {type === "password" && (
-        <i
-          onClick={() => setIsPasswordShown((prevState) => !prevState)}
-          className="material-symbols-rounded eye-icon"
-        >
-          {isPasswordShown ? "visibility" : "visibility_off"}
-        </i>
-      )}
-    </div>
-  );
-}
-*/
