@@ -107,7 +107,9 @@ export default function NavBar() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <NavText href="/" text="Sales Dashboard" isMain />
-          <NavText href="/salesperson_page" text="Sales Dashboard" />
+          <NavText href="/salesperson_page" text="Salesperson" />
+          <NavText href="/household_page" text="Household" />
+          <NavText href="/top_products_page" text="Products" />
           <NavText href="/customer_dashboard" text="Customer Dashboard" />
         </Toolbar>
       </Container>
