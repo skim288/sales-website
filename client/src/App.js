@@ -11,6 +11,8 @@ import SalesPage from './pages/SalesPage';
 import CustomerPage from './pages/CustomerPage';
 import LoginPage from './pages/LoginPage';
 import SalespersonPage from './pages/SalespersonPage';
+import HouseholdPage from './pages/HouseholdPage'
+import TopProductsPage from './pages/TopProductsPage'
 
 // Create theme
 export const theme = createTheme({
@@ -55,7 +57,27 @@ export default function App() {
                 </ProtectedRoute>
               } 
             />
-            
+              
+            <Route 
+              path="/household_page" 
+              element={
+                <ProtectedRoute>
+                  <HouseholdPage />
+                </ProtectedRoute>
+              } 
+            />
+
+
+           <Route 
+            path="/top_products_page" 
+            element={
+              <ProtectedRoute>
+                <TopProductsPage />
+              </ProtectedRoute>
+            } 
+          />
+
+              
             <Route 
               path="/customer_dashboard" 
               element={
