@@ -12,6 +12,12 @@ export default function CustomerPage() {
   const [lastname, setLastname] = useState('');
   const [error, setError] = useState('');
 
+  const [salesData, setSalesData] = useState([]);
+  const [customerIdSales, setCustomerIdSales] = useState('');
+  const [startdate, setStartdate] = useState('');
+  const [enddate, setEnddate] = useState('');
+  const [salesError, setSalesError] = useState('');
+
   const search = () => {
     if (!firstname || !lastname) {
       setData([]); 
@@ -39,7 +45,39 @@ export default function CustomerPage() {
       });
   };
 
-  const columns = [
+  const searchSales = () => {
+    if (!customerIdSales && (!startdate || !enddate)) {
+      setSalesData([]);
+      setSalesError('Please provide either a Customer ID or both Start and End Dates.');
+      return;
+    }
+
+    setSalesError('');
+
+    const queryParams = new URLSearchParams();
+    if (customerIdSales) queryParams.append('customerid', customerIdSales);
+    if (startdate) queryParams.append('startdate', startdate);
+    if (enddate) queryParams.append('enddate', enddate);
+
+    fetch(`http://${config.server_host}:${config.server_port}/sales/search?${queryParams.toString()}`)
+      .then(res => res.json())
+      .then(resJson => {
+        if (resJson.length === 0) {
+          setSalesData([]);
+          setSalesError('No sales records found matching your search.');
+        } else {
+          const salesWithId = resJson.map((s) => ({ id: s.salesid, ...s }));
+          setSalesData(salesWithId);
+          setSalesError('');
+        }
+      })
+      .catch(err => {
+        setSalesData([]);
+        setSalesError('Failed to fetch sales data.');
+      });
+  };
+
+  const customerColumns = [
     { field: 'customerid', headerName: 'Customer ID', width: 120 },
     { field: 'firstname', headerName: 'First Name', width: 150 },
     { field: 'lastname', headerName: 'Last Name', width: 150 },
@@ -47,6 +85,19 @@ export default function CustomerPage() {
     { field: 'cityname', headerName: 'City', width: 150 },
     { field: 'zipcode', headerName: 'Zip Code', width: 120 },
   ];
+
+  const salesColumns = [
+    { field: 'salesid', headerName: 'Sales ID', width: 120 },
+    { field: 'customerid', headerName: 'Customer ID', width: 120 },
+    { field: 'productid', headerName: 'Product ID', width: 120 },
+    { field: 'productname', headerName: 'Product Name', width: 150 },
+    { field: 'price', headerName: 'Price', width: 120 },
+    { field: 'quantity', headerName: 'Quantity', width: 100 },
+    { field: 'discount', headerName: 'Discount', width: 100 },
+    { field: 'totalprice', headerName: 'Total Price', width: 150 },
+    { field: 'salesdate', headerName: 'Sales Date', width: 180 },
+  ];
+
 
   return (
     <Container>
@@ -70,7 +121,7 @@ export default function CustomerPage() {
         </Grid>
       </Grid>
       <Button onClick={search} variant="contained" style={{ marginTop: '1rem' }}>
-        Search
+        Search Customers
       </Button>
 
       {error && (
@@ -79,10 +130,58 @@ export default function CustomerPage() {
         </div>
       )}
 
-      <h2 style={{ marginTop: '2rem' }}>Results</h2>
+      <h2 style={{ marginTop: '2rem' }}>Customer Results</h2>
       <DataGrid
         rows={data}
-        columns={columns}
+        columns={customerColumns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[5, 10, 25]}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        autoHeight
+      />
+
+      {/* Sales Search Section */}
+      <h2 style={{ marginTop: '3rem' }}>Search Sales</h2>
+      <Grid container spacing={4}>
+        <Grid item xs={4}>
+          <TextField
+            label="Customer ID"
+            value={customerIdSales}
+            onChange={(e) => setCustomerIdSales(e.target.value)}
+            style={{ width: '100%' }}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            label="Start Date (YYYY-MM-DD)"
+            value={startdate}
+            onChange={(e) => setStartdate(e.target.value)}
+            style={{ width: '100%' }}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            label="End Date (YYYY-MM-DD)"
+            value={enddate}
+            onChange={(e) => setEnddate(e.target.value)}
+            style={{ width: '100%' }}
+          />
+        </Grid>
+      </Grid>
+      <Button onClick={searchSales} variant="contained" style={{ marginTop: '1rem' }}>
+        Search Sales
+      </Button>
+
+      {salesError && (
+        <div style={{ color: 'red', marginTop: '1rem' }}>
+          {salesError}
+        </div>
+      )}
+
+      <h2 style={{ marginTop: '2rem' }}>Sales Results</h2>
+      <DataGrid
+        rows={salesData}
+        columns={salesColumns}
         pageSize={pageSize}
         rowsPerPageOptions={[5, 10, 25]}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}

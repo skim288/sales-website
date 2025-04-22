@@ -350,7 +350,6 @@ connection.connect((err) => err && console.log(err));
 const searchCustomers = async function(req, res) {
   const { firstname, lastname } = req.query;
 
-  // Case 2: Missing firstname or lastname
   if (!firstname || !lastname) {
     return res.status(400).json({ error: 'Both firstname and lastname must be provided.' });
   }
@@ -366,13 +365,74 @@ const searchCustomers = async function(req, res) {
 
   try {
     const result = await connection.query(query, params);
-    // Case 3: Return empty array if no results
     res.status(200).json(result.rows);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+const searchSales = async function(req, res) {
+  const { customerid, startdate, enddate } = req.query;
+
+  if (!customerid && (!startdate || !enddate)) {
+    return res.status(400).json({ error: 'Must provide either customerid or both startdate and enddate.' });
+  }
+
+  if (customerid && (!startdate || !enddate)) {
+    // Case 1: Only customerid provided
+    connection.query(`
+      SELECT s.salesid, s.customerid, s.productid, p.productname, p.price, s.quantity, s.discount, s.totalprice, s.salesdate
+      FROM sales s
+      JOIN products p ON s.productid = p.productid
+      WHERE s.customerid = $1
+      ORDER BY s.salesdate
+    `, [customerid], (err, data) => {
+      if (err) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data.rows);
+      }
+    });
+
+  } else if (!customerid && (startdate && enddate)) {
+    // Case 2: Only startdate and enddate provided
+    connection.query(`
+      SELECT s.salesid, s.customerid, s.productid, p.productname, p.price, s.quantity, s.discount, s.totalprice, s.salesdate
+      FROM sales s
+      JOIN products p ON s.productid = p.productid
+      WHERE s.salesdate BETWEEN $1 AND $2
+      ORDER BY s.salesdate
+    `, [startdate, enddate], (err, data) => {
+      if (err) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data.rows);
+      }
+    });
+
+  } else if (customerid && (startdate && enddate)) {
+    // Case 3: Both customerid and date range provided
+    connection.query(`
+      SELECT s.salesid, s.customerid, s.productid, p.productname, p.price, s.quantity, s.discount, s.totalprice, s.salesdate
+      FROM sales s
+      JOIN products p ON s.productid = p.productid
+      WHERE s.customerid = $1
+      AND s.salesdate BETWEEN $2 AND $3
+      ORDER BY s.salesdate
+    `, [customerid, startdate, enddate], (err, data) => {
+      if (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal server error' });
+      } else {
+        res.status(200).json(data.rows);
+      }
+    });
+  }
+};
+
 
 const top_products = async function (req, res) {
   const zip = req.query.zip ?? "";
@@ -841,5 +901,6 @@ module.exports = {
   highest_households,
   household_mean_income,
   search_employee_email,
-  product_categories
+  product_categories,
+  searchSales
 }

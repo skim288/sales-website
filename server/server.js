@@ -20,6 +20,7 @@ app.use(cors({
 // app.get('/top_albums', routes.top_albums);
 // app.get('/search_songs', routes.search_songs);
 app.get('/customers/search', routes.searchCustomers); 
+app.get('/sales/search', routes.searchSales); 
 app.get('/top_products', routes.top_products);
 app.get('/top_products/:categoryid', routes.top_products);
 app.get('/top_salesperson', routes.top_salesperson);
