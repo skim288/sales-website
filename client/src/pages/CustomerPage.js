@@ -110,7 +110,8 @@ const searchComparison = async () => {
         id: `amazon-${idx}`,
         name: p.name,
         price: p.price,
-        source: 'Amazon'
+        source: 'Amazon',
+        link: p.amazonLink
       })));
     }
 
@@ -119,7 +120,8 @@ const searchComparison = async () => {
         id: `walmart-${idx}`,
         name: p.title,
         price: p.price.currentPrice ? `$${p.price.currentPrice}` : '',
-        source: 'Walmart'
+        source: 'Walmart',
+        link: p.link
       })));
     }
 
@@ -162,6 +164,16 @@ const searchComparison = async () => {
     { field: 'name', headerName: 'Product Name', width: 250 },
     { field: 'price', headerName: 'Price', width: 100 },
     { field: 'source', headerName: 'Source', width: 100 },
+    { 
+      field: 'link', 
+      headerName: 'Link', 
+      width: 200,
+      renderCell: (params) => (
+        <a href={params.value} target="_blank" rel="noopener noreferrer">
+          View
+        </a>
+      )
+    }
   ];
 
   return (
