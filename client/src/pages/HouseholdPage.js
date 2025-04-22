@@ -85,7 +85,7 @@ export default function HouseholdPage() {
 
       <Grid item xs={12} md={4}>
         <FormControl  sx={{width: '65.5%'}}>
-          <InputLabel id="category-label">Year</InputLabel>
+          <InputLabel id="category-label">Select Year</InputLabel>
           <Select
             labelId="category-label"
             value={year}

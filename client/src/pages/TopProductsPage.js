@@ -96,7 +96,7 @@ export default function TopProductsPage() {
 
       <Grid item xs={12} md={4}>
         <FormControl  sx={{width: '65.5%'}}>
-          <InputLabel id="month_label">Month</InputLabel>
+          <InputLabel id="month_label"> Select Month</InputLabel>
           <Select
             labelId="month_label"
             value={month}

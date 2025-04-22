@@ -83,7 +83,7 @@ export default function SongsPage() {
           
         <Grid item xs={12} md={4} >
         <FormControl sx={{width: '65.5%'}}>
-            <InputLabel id="category-label">Product Category </InputLabel>
+            <InputLabel id="category-label">Select Product Category </InputLabel>
             <Select
             labelId="category-label"
             value={category}
@@ -105,24 +105,6 @@ export default function SongsPage() {
             </Select>
         </FormControl>
         </Grid>
-
-          {/* <Grid item xs={12} md={4}>
-            <Autocomplete
-                freeSolo
-                options={categoryOptions}
-                value={category}
-                onInputChange={(e, newValue) => setCategory(newValue)}
-                renderInput={params => (
-                <TextField
-                    {...params}
-                    label="Category"
-                    placeholder="Type or select a category"
-                    fullWidth
-                />
-                )}
-            />
-            </Grid> */}
-            
           
 
         <Button
