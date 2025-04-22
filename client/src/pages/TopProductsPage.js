@@ -31,6 +31,7 @@ import { formatDuration } from "../helpers/formatter";
 const config = require("../config.json");
 
 export default function TopProductsPage() {
+  const [pageSize, setPageSize] = useState(10);
   const [products, setProducts] = useState([]);
   const [zip, setZip] = useState("");
   const [year, setYear] = useState("");
@@ -55,6 +56,13 @@ export default function TopProductsPage() {
       .then((res) => res.json())
       .then((resJson) => setProducts(resJson));
   };
+
+  const columns = [
+    { field: 'productname', headerName: 'Product Name', flex: 1},
+    { field: 'total_sales', headerName: 'Total Sales', type: 'number', flex: 1,  headerAlign: 'center', align: 'center'},
+  ];
+
+
 
   const months = [
     { label: 'January', value: "1" },
@@ -111,13 +119,24 @@ export default function TopProductsPage() {
         </Button>
       </Grid>
 
-      <h2>Results</h2>
+      
 
       <Typography variant="h4" gutterBottom>
         Top {categoryname} Products
       </Typography>
 
-      <TableContainer component={Paper}>
+      <h2 style={{ marginTop: '2rem' }}>Results</h2>
+      <DataGrid
+        rows={products}
+        columns={columns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[5, 10, 25]}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        autoHeight
+        getRowId={(row) => row.productid}
+      />
+
+      {/* <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -134,7 +153,9 @@ export default function TopProductsPage() {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer> */}
+
+
     </Container>
   );
 }
