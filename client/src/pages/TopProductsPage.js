@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { useParams, useSearchParams } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -34,21 +34,35 @@ export default function TopProductsPage() {
   const [products, setProducts] = useState([]);
   const [zip, setZip] = useState("");
   const [year, setYear] = useState("");
+  const { categoryid } = useParams();
+  const [searchParams] = useSearchParams();
+  const categoryname = searchParams.get('categoryname');
+  const [month, setMonth] = useState("");
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/top_products`)
+    fetch(
+      `http://${config.server_host}:${config.server_port}/top_products/${categoryid}`
+    )
       .then((res) => res.json())
       .then((resJson) => setProducts(resJson));
   }, []);
 
   const search = () => {
     fetch(
-      `http://${config.server_host}:${config.server_port}/top_products?zip=${zip}` +
-        `&year=${year}`
+      `http://${config.server_host}:${config.server_port}/top_products/${categoryid}?zip=${zip}` +
+        `&month=${month}`
     )
       .then((res) => res.json())
       .then((resJson) => setProducts(resJson));
   };
+
+  const months = [
+    { label: 'January', value: "1" },
+    { label: 'February', value: "2" },
+    { label: 'March', value: "3" },
+    { label: 'April', value: "4" },
+    { label: 'May', value: "5" }
+  ]
 
   return (
     <Container>
@@ -66,34 +80,22 @@ export default function TopProductsPage() {
 
       <Grid item xs={12} md={4}>
         <FormControl fullWidth>
-          <InputLabel id="category-label">Year</InputLabel>
+          <InputLabel id="month_label">Month</InputLabel>
           <Select
-            labelId="category-label"
-            value={year}
-            label="Product Category"
-            onChange={(e) => setYear(e.target.value)}
+            labelId="month_label"
+            value={month}
+            label="Month"
+            onChange={(e) => setMonth(e.target.value)}
           >
             {/* “None” choice */}
             <MenuItem value="">
-              <Checkbox checked={year === ""} sx={{ p: 0, mr: 1 }} />
+              <Checkbox checked={month === ""} sx={{ p: 0, mr: 1 }} />
               <ListItemText primary="— None —" />
             </MenuItem>
-            {[
-              "2011",
-              "2012",
-              "2013",
-              "2014",
-              "2015",
-              "2016",
-              "2017",
-              "2018",
-              "2019",
-              "2020",
-              "2021",
-            ].map((item) => (
-              <MenuItem key={item} value={item}>
-                <Checkbox checked={year === item} sx={{ p: 0, mr: 1 }} />
-                <ListItemText primary={item} />
+            {months.map(({label, value}) => (
+              <MenuItem key={value} value={value}>
+                <Checkbox checked={month === value} sx={{ p: 0, mr: 1 }} />
+                <ListItemText primary={label} />
               </MenuItem>
             ))}
           </Select>
@@ -112,7 +114,7 @@ export default function TopProductsPage() {
       <h2>Results</h2>
 
       <Typography variant="h4" gutterBottom>
-        Top Products
+        Top {categoryname} Products
       </Typography>
 
       <TableContainer component={Paper}>
