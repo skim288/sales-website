@@ -112,7 +112,7 @@ export default function App() {
 
 
            <Route 
-            path="/top_products_page" 
+            path="/top_products_page/:categoryid" 
             element={
               <ProtectedRoute>
                 <TopProductsPage />
