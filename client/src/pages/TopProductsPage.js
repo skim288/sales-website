@@ -131,14 +131,9 @@ export default function TopProductsPage() {
           </div>
         )}
       
-
       
 
-      <Typography variant="h4" gutterBottom>
-        Top {categoryname} Products
-      </Typography>
-
-      <h2 style={{ marginTop: '2rem' }}>Results</h2>
+      <h2 style={{ marginTop: '2rem' }}> Top {categoryname} Product Results</h2>
       <DataGrid
         rows={products}
         columns={columns}

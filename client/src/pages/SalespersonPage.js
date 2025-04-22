@@ -120,13 +120,11 @@ export default function SongsPage() {
         )}
           
          
-          <h2>Results</h2>
+        
           
-    <Typography variant="h4" gutterBottom>
-        Top Salesperson
-    </Typography>
+  
 
-    <h2 style={{ marginTop: '2rem' }}>Results</h2>
+    <h2 style={{ marginTop: '2rem' }}>Top Salesperson Results</h2>
       <DataGrid
         rows={salesperson}
         columns={columns}

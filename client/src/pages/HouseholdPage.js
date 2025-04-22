@@ -132,13 +132,9 @@ export default function HouseholdPage() {
             </div>
         )}
 
-      <h2>Results</h2>
+     
 
-      <Typography variant="h4" gutterBottom>
-        Top Households
-      </Typography>
-
-      <h2 style={{ marginTop: '2rem' }}>Results</h2>
+      <h2 style={{ marginTop: '2rem' }}>Top Households Results</h2>
       <DataGrid
         rows={household}
         columns={columns}
