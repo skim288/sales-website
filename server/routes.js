@@ -506,6 +506,24 @@ const top_product_categories = async function (req, res) {
   }
 };
 
+const product_categories = async function (req, res) {
+  connection.query(
+    // returns the top salesperson per city (orders by total_sales desc, so topsalesperson in company is on top)
+    `
+    SELECT categoryid, categoryname
+    FROM categories
+  `,
+    (err, data) => {
+      if (err) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data.rows);
+      }
+    }
+  );
+  }
+
 const top_salesperson = async function (req, res) {
   const zip = req.query.zip ?? "";
   const category = req.query.category ?? "";
@@ -782,5 +800,6 @@ module.exports = {
   top_salesperson,
   highest_households,
   household_mean_income,
-  search_employee_email
+  search_employee_email,
+  product_categories
 }
