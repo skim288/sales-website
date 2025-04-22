@@ -35,6 +35,7 @@ export default function HouseholdPage() {
   const [household, setHousehold] = useState([]);
   const [zip, setZip] = useState("");
   const [year, setYear] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch(
@@ -50,7 +51,13 @@ export default function HouseholdPage() {
         `&year=${year}`
     )
       .then((res) => res.json())
-      .then((resJson) => setHousehold(resJson));
+      .then((resJson) => {
+        if(resJson.length === 0){
+          setError("ZIP code is invalid.")
+        } else{
+          setHousehold(resJson);
+        }
+      })
   };
 
   const columns = [
@@ -112,14 +119,18 @@ export default function HouseholdPage() {
         </FormControl>
       </Grid>
 
-      <Grid item xs={12} md={4}>
+      
         <Button
           onClick={() => search()}
           variant="contained"  style={{ marginTop: '1rem' }}
         >
           Search
         </Button>
-      </Grid>
+        {error && (
+            <div style={{ color: 'red', marginTop: '1rem' }}>
+              {error}
+            </div>
+        )}
 
       <h2>Results</h2>
 

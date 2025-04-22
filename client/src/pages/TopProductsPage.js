@@ -33,12 +33,13 @@ const config = require("../config.json");
 export default function TopProductsPage() {
   const [pageSize, setPageSize] = useState(10);
   const [products, setProducts] = useState([]);
-  const [zip, setZip] = useState("");
-  const [year, setYear] = useState("");
+  const [zip, setZip] = useState('');
+  const [year, setYear] = useState('');
   const { categoryid } = useParams();
   const [searchParams] = useSearchParams();
   const categoryname = searchParams.get('categoryname');
-  const [month, setMonth] = useState("");
+  const [month, setMonth] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch(
@@ -54,7 +55,14 @@ export default function TopProductsPage() {
         `&month=${month}`
     )
       .then((res) => res.json())
-      .then((resJson) => setProducts(resJson));
+      .then((resJson) => {
+        if(resJson.length === 0){
+          setError("ZIP code is invalid.")
+        } else{
+          setProducts(resJson);
+        }
+        
+      })
   };
 
   const columns = [
@@ -110,14 +118,19 @@ export default function TopProductsPage() {
         </FormControl>
       </Grid>
 
-      <Grid item xs={12} md={4}>
-        <Button
-          onClick={() => search()}
-          variant="contained"  style={{ marginTop: '1rem' }}
-        >
-          Search
-        </Button>
-      </Grid>
+      
+      <Button
+        onClick={() => search()}
+        variant="contained"  style={{ marginTop: '1rem' }}
+      >
+        Search
+      </Button>
+      {error && (
+          <div style={{ color: 'red', marginTop: '1rem' }}>
+            {error}
+          </div>
+        )}
+      
 
       
 
