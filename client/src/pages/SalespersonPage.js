@@ -64,9 +64,11 @@ export default function SongsPage() {
     };
 
     const columns = [
+      { field: 'employeeid', headerName: 'Employee ID', flex: 1, headerAlign: 'center', align: 'center' },
       { field: 'firstname', headerName: 'First Name', flex: 1, headerAlign: 'center', align: 'center' },
       { field: 'lastname', headerName: 'Last Name', flex: 1, headerAlign: 'center', align: 'center' },
       { field: 'cityname', headerName: 'City', flex: 1, headerAlign: 'center', align: 'center' },
+      { field: 'zipcode', headerName: 'ZIP Code', flex: 1, headerAlign: 'center', align: 'center' },
       { field: 'total_sales', headerName: 'Total Sales', type: 'number', flex: 1, headerAlign: 'center', align: 'center' },
     ];
           
@@ -135,7 +137,7 @@ export default function SongsPage() {
         rowsPerPageOptions={[5, 10, 25]}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         autoHeight
-        getRowId={(row) => row.firstname}
+        getRowId={(row) => row.employeeid}
       />
 
 
