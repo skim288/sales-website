@@ -33,7 +33,7 @@ export default function AlbumInfoPage() {
           src={albumData.thumbnail_url}
           alt={`${albumData.title} album art`}
           style={{
-            marginTop: '40px',
+            marginTop: '40px', 
             marginRight: '40px',
             marginBottom: '40px'
           }}

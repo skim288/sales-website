@@ -77,7 +77,7 @@ export default function HouseholdPage() {
       </Grid>
 
       <Grid item xs={12} md={4}>
-        <FormControl fullWidth>
+        <FormControl  sx={{width: '65.5%'}}>
           <InputLabel id="category-label">Year</InputLabel>
           <Select
             labelId="category-label"
@@ -115,7 +115,7 @@ export default function HouseholdPage() {
       <Grid item xs={12} md={4}>
         <Button
           onClick={() => search()}
-          style={{ left: "50%", transform: "translateX(-50%)" }}
+          variant="contained"  style={{ marginTop: '1rem' }}
         >
           Search
         </Button>

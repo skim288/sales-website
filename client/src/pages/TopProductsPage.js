@@ -87,7 +87,7 @@ export default function TopProductsPage() {
       </Grid>
 
       <Grid item xs={12} md={4}>
-        <FormControl fullWidth>
+        <FormControl  sx={{width: '65.5%'}}>
           <InputLabel id="month_label">Month</InputLabel>
           <Select
             labelId="month_label"
@@ -113,7 +113,7 @@ export default function TopProductsPage() {
       <Grid item xs={12} md={4}>
         <Button
           onClick={() => search()}
-          style={{ left: "50%", transform: "translateX(-50%)" }}
+          variant="contained"  style={{ marginTop: '1rem' }}
         >
           Search
         </Button>

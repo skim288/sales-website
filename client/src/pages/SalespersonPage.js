@@ -73,9 +73,9 @@ export default function SongsPage() {
 
 
           
-        <Grid item xs={12} md={4}>
-        <FormControl fullWidth>
-            <InputLabel id="category-label">Product Category</InputLabel>
+        <Grid item xs={12} md={4} >
+        <FormControl sx={{width: '65.5%'}}>
+            <InputLabel id="category-label">Product Category </InputLabel>
             <Select
             labelId="category-label"
             value={category}
@@ -115,9 +115,12 @@ export default function SongsPage() {
             />
             </Grid> */}
             
-            <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4}>
 
-          <Button onClick={() => search() } style={{ left: '50%', transform: 'translateX(-50%)' }}>
+          <Button
+            onClick={() => search() }
+            variant="contained"  style={{ marginTop: '1rem' }}
+          >
             Search
           </Button>
           </Grid>
