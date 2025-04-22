@@ -21,11 +21,12 @@ app.get('/top_albums', routes.top_albums);
 app.get('/search_songs', routes.search_songs);
 app.get('/customers/search', routes.searchCustomers); 
 app.get('/top_products', routes.top_products);
-app.get('/top_product_categories', routes.top_product_categories);
+app.get('/top_products/:categoryid', routes.top_products);
 app.get('/top_salesperson', routes.top_salesperson);
 app.get('/highest_households', routes.highest_households);
 app.get('/household_mean_income', routes.household_mean_income);
 app.get('/search_employee_email', routes.search_employee_email);
+app.get('/product_categories', routes.product_categories);
 
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)
