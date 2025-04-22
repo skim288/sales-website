@@ -374,22 +374,40 @@ const searchCustomers = async function(req, res) {
   }
 };
 
-// TOP PRODUCTS with option to filter by zipcode
 const top_products = async function (req, res) {
   const zip = req.query.zip ?? "";
-  // ALLOWS US TO FILTER BY DATE
-  const dateLow = req.query.dateLow?? ""; //replace '' with a default date here (look at datagrip format)
-  const dateHigh = req.query.dateHigh ?? ""; //replace '' with a default date here (look at datagrip format)
-
+  const month = req.query.month ?? "";
+  
   // Top 5 products filtered by zipcode
-  if (zip) {
+  if (zip && month) {
     connection.query(
       `
       SELECT p.productid, p.productname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales
       FROM sales s JOIN products p ON s.productid=p.productid
             JOIN employees e ON e.employeeid=s.salespersonid
             JOIN cities c ON c.cityid=e.cityid
-      WHERE c.zipcode = '%${zip}%'
+      WHERE c.zipcode = '${zip}' AND EXTRACT(MONTH FROM s.salesdate) = '${month}' AND p.categoryid='${req.params.categoryid}'
+      GROUP BY p.productid, p.productname
+      ORDER BY SUM(s.totalprice) DESC
+      LIMIT 5
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
+  }else if (zip && !month) {
+    connection.query(
+      `
+      SELECT p.productid, p.productname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales
+      FROM sales s JOIN products p ON s.productid=p.productid
+            JOIN employees e ON e.employeeid=s.salespersonid
+            JOIN cities c ON c.cityid=e.cityid
+      WHERE c.zipcode = '%${zip}%' AND p.categoryid='${req.params.categoryid}'
       GROUP BY p.productid, p.productname
       ORDER BY SUM(s.totalprice) DESC
       LIMIT 5
@@ -405,11 +423,33 @@ const top_products = async function (req, res) {
     );
 
     // Top 5 products (NO zipcode)
+  }else if (!zip && month) {
+    connection.query(
+      `
+      SELECT p.productid, p.productname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales
+      FROM sales s JOIN products p ON s.productid=p.productid
+            JOIN employees e ON e.employeeid=s.salespersonid
+            JOIN cities c ON c.cityid=e.cityid
+      WHERE EXTRACT(MONTH FROM s.salesdate) = '${month}' AND p.categoryid='${req.params.categoryid}'
+      GROUP BY p.productid, p.productname
+      ORDER BY SUM(s.totalprice) DESC
+      LIMIT 5
+    `,
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.json([]);
+        } else {
+          res.json(data.rows);
+        }
+      }
+    );
   } else {
     connection.query(
       `
       SELECT p.productid, p.productname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales
       FROM sales s JOIN products p ON s.productid=p.productid
+      WHERE p.categoryid='${req.params.categoryid}'
       GROUP BY p.productid, p.productname
       ORDER BY SUM(s.totalprice) DESC
       LIMIT 5
