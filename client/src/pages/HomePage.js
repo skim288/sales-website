@@ -31,13 +31,29 @@ export default function HomePage() {
           key={category.categoryid}
           p={3}
           m={2}
-          style={{ background: '#c5cae9', borderRadius: '16px', border: '2px solid #000' }}
+          style={{
+            background: '#c5cae9',
+            borderRadius: '16px',
+            border: '2px solid #000',
+            width: '250px',
+            textAlign: 'center'
+          }}
         >
           <img
-            key={category.categoryid}
+            src={category.category_img_link}
+            // src={"https://images.pexels.com/photos/1005406/pexels-photo-1005406.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"}
             
-            alt={`${category.categoryname} album art`}
+            key={category.categoryid}
+            alt={`${category.categoryname} category name`}
+            style={{
+              width: '100%',
+              height: '150px',
+              objectFit: 'cover',
+              borderRadius: '12px',
+              marginBottom: '10px'
+            }}
           />
+
           <h4><NavLink to={`/top_products_page/${category.categoryid}?categoryname=${category.categoryname}`}>{category.categoryname}</NavLink></h4>
         </Box>
       )}
