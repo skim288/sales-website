@@ -69,7 +69,6 @@ export default function NavBar() {
           {/* Keep the rest of your navigation structure */}
           <NavText href="/salesperson_page" text="Sales Person Page" />
           <NavText href="/household_page" text="Household Page" />
-          <NavText href="/top_products_page" text="Top Products Page" />
 
           <NavText href="/customer_dashboard" text="Customer Page" />
           
