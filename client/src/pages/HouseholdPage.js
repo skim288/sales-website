@@ -35,6 +35,7 @@ export default function HouseholdPage() {
   const [household, setHousehold] = useState([]);
   const [zip, setZip] = useState("");
   const [year, setYear] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch(
@@ -50,7 +51,13 @@ export default function HouseholdPage() {
         `&year=${year}`
     )
       .then((res) => res.json())
-      .then((resJson) => setHousehold(resJson));
+      .then((resJson) => {
+        if(resJson.length === 0){
+          setError("ZIP code is invalid.")
+        } else{
+          setHousehold(resJson);
+        }
+      })
   };
 
   const columns = [
@@ -78,7 +85,7 @@ export default function HouseholdPage() {
 
       <Grid item xs={12} md={4}>
         <FormControl  sx={{width: '65.5%'}}>
-          <InputLabel id="category-label">Year</InputLabel>
+          <InputLabel id="category-label">Select Year</InputLabel>
           <Select
             labelId="category-label"
             value={year}
@@ -112,22 +119,22 @@ export default function HouseholdPage() {
         </FormControl>
       </Grid>
 
-      <Grid item xs={12} md={4}>
+      
         <Button
           onClick={() => search()}
           variant="contained"  style={{ marginTop: '1rem' }}
         >
           Search
         </Button>
-      </Grid>
+        {error && (
+            <div style={{ color: 'red', marginTop: '1rem' }}>
+              {error}
+            </div>
+        )}
 
-      <h2>Results</h2>
+     
 
-      <Typography variant="h4" gutterBottom>
-        Top Households
-      </Typography>
-
-      <h2 style={{ marginTop: '2rem' }}>Results</h2>
+      <h2 style={{ marginTop: '2rem' }}>Top Households Results</h2>
       <DataGrid
         rows={household}
         columns={columns}

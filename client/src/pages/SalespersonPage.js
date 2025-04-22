@@ -36,6 +36,7 @@ export default function SongsPage() {
     const [salesperson, setSalesperson] = useState([]);
     const [zip, setZip] = useState('');
     const [category, setCategory] = useState('');
+    const [error, setError] = useState('');
     
 
     useEffect(() => {
@@ -52,7 +53,13 @@ export default function SongsPage() {
             `&category=${category}`
         )
           .then(res => res.json())
-          .then(resJson => setSalesperson(resJson));
+          .then(resJson => {
+            if(resJson.length === 0){
+              setError("ZIP code is invalid.")
+            }else{
+              setSalesperson(resJson);
+            }
+        })
     };
 
     const columns = [
@@ -70,12 +77,13 @@ export default function SongsPage() {
               <TextField label='ZIP code' value={zip} onChange={(e) => setZip(e.target.value)} style={{ width: "100%" }}/>
             </Grid>
           </Grid>
+          
 
 
           
         <Grid item xs={12} md={4} >
         <FormControl sx={{width: '65.5%'}}>
-            <InputLabel id="category-label">Product Category </InputLabel>
+            <InputLabel id="category-label">Select Product Category </InputLabel>
             <Select
             labelId="category-label"
             value={category}
@@ -97,41 +105,26 @@ export default function SongsPage() {
             </Select>
         </FormControl>
         </Grid>
-
-          {/* <Grid item xs={12} md={4}>
-            <Autocomplete
-                freeSolo
-                options={categoryOptions}
-                value={category}
-                onInputChange={(e, newValue) => setCategory(newValue)}
-                renderInput={params => (
-                <TextField
-                    {...params}
-                    label="Category"
-                    placeholder="Type or select a category"
-                    fullWidth
-                />
-                )}
-            />
-            </Grid> */}
-            
-          <Grid item xs={12} md={4}>
-
-          <Button
-            onClick={() => search() }
-            variant="contained"  style={{ marginTop: '1rem' }}
-          >
-            Search
-          </Button>
-          </Grid>
-         
-          <h2>Results</h2>
           
-    <Typography variant="h4" gutterBottom>
-        Top Salesperson
-    </Typography>
 
-    <h2 style={{ marginTop: '2rem' }}>Results</h2>
+        <Button
+          onClick={() => search() }
+          variant="contained"  style={{ marginTop: '1rem' }}
+        >
+          Search
+        </Button>
+        {error && (
+          <div style={{ color: 'red', marginTop: '1rem' }}>
+            {error}
+          </div>
+        )}
+          
+         
+        
+          
+  
+
+    <h2 style={{ marginTop: '2rem' }}>Top Salesperson Results</h2>
       <DataGrid
         rows={salesperson}
         columns={columns}
