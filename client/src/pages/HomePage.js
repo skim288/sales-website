@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, Typography, Paper, Container } from '@mui/material';
 import { useAuth } from '../components/AuthContext';
 import { NavLink } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+const config = require('../config.json');
 
 export default function HomePage() {
   const { userName, userEmail } = useAuth();
