@@ -296,4 +296,7 @@ const searchComparison = async () => {
       />
     </Container>
   );
+
+
+
 }

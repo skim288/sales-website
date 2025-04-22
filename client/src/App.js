@@ -11,8 +11,9 @@ import SalesPage from './pages/SalesPage';
 import CustomerPage from './pages/CustomerPage';
 import LoginPage from './pages/LoginPage';
 import SalespersonPage from './pages/SalespersonPage';
-import HouseholdPage from './pages/HouseholdPage'
-import TopProductsPage from './pages/TopProductsPage'
+import HouseholdPage from './pages/HouseholdPage';
+import TopProductsPage from './pages/TopProductsPage';
+import SalesTrendPage from './pages/SalesTrendPage';
 
 // Create theme
 export const theme = createTheme({
@@ -129,7 +130,18 @@ export default function App() {
                 </ProtectedRoute>
               } 
             />
+    
+
+          <Route 
+              path="/sales_trend_dashboard" 
+              element={
+                <ProtectedRoute>
+                  <SalesTrendPage />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
+
         </BrowserRouter>
       </ThemeProvider>
     </AuthProvider>

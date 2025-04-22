@@ -71,6 +71,7 @@ export default function NavBar() {
           <NavText href="/household_page" text="Household Page" />
 
           <NavText href="/customer_dashboard" text="Customer Page" />
+          <NavText href="/sales_trend_dashboard" text="Sales Trend Page" />
           
           {/* Add the login info and logout button */}
           <Box sx={{ flexGrow: 1 }} />

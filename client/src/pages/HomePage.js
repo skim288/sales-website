@@ -44,7 +44,7 @@ export default function HomePage() {
             // src={"https://images.pexels.com/photos/1005406/pexels-photo-1005406.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"}
             
             key={category.categoryid}
-            alt={`${category.categoryname} category name`}
+            alt={`${category.categoryname}`}
             style={{
               width: '100%',
               height: '150px',

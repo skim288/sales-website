@@ -10,15 +10,6 @@ app.use(cors({
 
 // We use express to define our various API endpoints and
 // provide their handlers that we implemented in routes.js
-// app.get('/author/:type', routes.author);
-// app.get('/random', routes.random);
-// app.get('/song/:song_id', routes.song);
-// app.get('/album/:album_id', routes.album);
-// app.get('/albums', routes.albums);
-// app.get('/album_songs/:album_id', routes.album_songs);
-// app.get('/top_songs', routes.top_songs);
-// app.get('/top_albums', routes.top_albums);
-// app.get('/search_songs', routes.search_songs);
 app.get('/customers/search', routes.searchCustomers); 
 app.get('/sales/search', routes.searchSales); 
 app.get('/top_products', routes.top_products);
@@ -28,6 +19,7 @@ app.get('/highest_households', routes.highest_households);
 app.get('/household_mean_income', routes.household_mean_income);
 app.get('/search_employee_email', routes.search_employee_email);
 app.get('/product_categories', routes.product_categories);
+app.get('/monthly_sales_by_category', routes.monthly_sales_by_category);
 
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)

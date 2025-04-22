@@ -94,3 +94,43 @@ export default function SongCard({ songId, handleClose }) {
     </Modal>
   );
 }
+
+
+// import { useEffect, useState } from 'react';
+// import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+
+// const config = require('../config.json');
+
+// export default function MonthlySalesChart({ category }) {
+//   const [salesData, setSalesData] = useState([]);
+
+//   useEffect(() => {
+//     const url = category
+//       ? `http://${config.server_host}:${config.server_port}/monthly_sales_by_category?category=${category}`
+//       : `http://${config.server_host}:${config.server_port}/monthly_sales_by_category`;
+
+//     fetch(url)
+//       .then(res => res.json())
+//       .then(data => {
+//         // Optional: Format month names to readable short forms
+//         const formattedData = data.map(row => ({
+//           month: row.sales_month, // You can format this more if needed
+//           sales: parseFloat(row.sales),
+//         }));
+//         setSalesData(formattedData);
+//       });
+//   }, [category]);
+
+//   return (
+//     <ResponsiveContainer width="100%" height={300}>
+//       <BarChart data={salesData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+//         <CartesianGrid strokeDasharray="3 3" />
+//         <XAxis dataKey="month" />
+//         <YAxis />
+//         <Tooltip />
+//         <Bar dataKey="sales" fill="#8884d8" />
+//       </BarChart>
+//     </ResponsiveContainer>
+//   );
+// }
+
