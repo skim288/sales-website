@@ -18,6 +18,10 @@ export default function CustomerPage() {
   const [enddate, setEnddate] = useState('');
   const [salesError, setSalesError] = useState('');
 
+  const [comparisonKeyword, setComparisonKeyword] = useState('');
+  const [comparisonData, setComparisonData] = useState([]);
+  const [comparisonError, setComparisonError] = useState('');
+
   const search = () => {
     if (!firstname || !lastname) {
       setData([]); 
@@ -77,6 +81,62 @@ export default function CustomerPage() {
       });
   };
 
+const searchComparison = async () => {
+  if (!comparisonKeyword) {
+    setComparisonData([]);
+    setComparisonError('Please enter a keyword to search.');
+    return;
+  }
+
+  setComparisonError('');
+  try {
+    const headers = {
+      'x-rapidapi-host': 'api-to-find-grocery-prices.p.rapidapi.com',
+      'x-rapidapi-key': 'd881b16b9emshd8d18d5dba9bb3fp1da4dcjsna6c8a0e44659'
+    };
+
+    const [amazonRes, walmartRes] = await Promise.all([
+      fetch(`https://api-to-find-grocery-prices.p.rapidapi.com/amazon?query=${encodeURIComponent(comparisonKeyword)}`, { headers }),
+      fetch(`https://api-to-find-grocery-prices.p.rapidapi.com/walmart?query=${encodeURIComponent(comparisonKeyword)}`, { headers })
+    ]);
+
+    const amazonData = await amazonRes.json();
+    const walmartData = await walmartRes.json();
+
+    let combined = [];
+
+    if (amazonData.products && amazonData.products.length > 0) {
+      combined = combined.concat(amazonData.products.map((p, idx) => ({
+        id: `amazon-${idx}`,
+        name: p.name,
+        price: p.price,
+        source: 'Amazon'
+      })));
+    }
+
+    if (walmartData && walmartData.length > 0) {
+      combined = combined.concat(walmartData.map((p, idx) => ({
+        id: `walmart-${idx}`,
+        name: p.title,
+        price: p.price.currentPrice ? `$${p.price.currentPrice}` : '',
+        source: 'Walmart'
+      })));
+    }
+
+    if (combined.length === 0) {
+      setComparisonData([]);
+      setComparisonError('No products found.');
+    } else {
+      setComparisonData(combined);
+      setComparisonError('');
+    }
+  } catch (err) {
+    console.error(err);
+    setComparisonData([]);
+    setComparisonError('Failed to fetch comparison data.');
+  }
+};
+
   const customerColumns = [
     { field: 'customerid', headerName: 'Customer ID', width: 120 },
     { field: 'firstname', headerName: 'First Name', width: 150 },
@@ -98,6 +158,11 @@ export default function CustomerPage() {
     { field: 'salesdate', headerName: 'Sales Date', width: 180 },
   ];
 
+  const comparisonColumns = [
+    { field: 'name', headerName: 'Product Name', width: 250 },
+    { field: 'price', headerName: 'Price', width: 100 },
+    { field: 'source', headerName: 'Source', width: 100 },
+  ];
 
   return (
     <Container>
@@ -140,7 +205,6 @@ export default function CustomerPage() {
         autoHeight
       />
 
-      {/* Sales Search Section */}
       <h2 style={{ marginTop: '3rem' }}>Search Sales</h2>
       <Grid container spacing={4}>
         <Grid item xs={4}>
@@ -182,6 +246,37 @@ export default function CustomerPage() {
       <DataGrid
         rows={salesData}
         columns={salesColumns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[5, 10, 25]}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        autoHeight
+      />
+
+      <h2 style={{ marginTop: '3rem' }}>Product Price Comparison</h2>
+      <Grid container spacing={4}>
+        <Grid item xs={8}>
+          <TextField
+            label="Keyword"
+            value={comparisonKeyword}
+            onChange={(e) => setComparisonKeyword(e.target.value)}
+            style={{ width: '100%' }}
+          />
+        </Grid>
+      </Grid>
+      <Button onClick={searchComparison} variant="contained" style={{ marginTop: '1rem' }}>
+        Search Product Prices
+      </Button>
+
+      {comparisonError && (
+        <div style={{ color: 'red', marginTop: '1rem' }}>
+          {comparisonError}
+        </div>
+      )}
+
+      <h2 style={{ marginTop: '2rem' }}>Product Price Comparison Results</h2>
+      <DataGrid
+        rows={comparisonData}
+        columns={comparisonColumns}
         pageSize={pageSize}
         rowsPerPageOptions={[5, 10, 25]}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
