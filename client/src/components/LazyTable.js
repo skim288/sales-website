@@ -1,13 +1,5 @@
-import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-} from "@mui/material";
+import { useEffect, useState } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 
 // This component provides a paginated MUI table that fetches data only from the specified page.
 // This optimization is known as lazy loading. It is unnecessary for you to utilize this optimization
@@ -17,24 +9,20 @@ import {
 // passed into the component. Some of these props are optional (defaultPageSize, rowsPerPageOptions) while
 // others are required (routes, columns). Though not indicated by code, whether the props are optional or
 // required will affect how you handle them in the code.
-export default function LazyTable({
-  route,
-  columns,
-  defaultPageSize,
-  rowsPerPageOptions,
-}) {
+export default function LazyTable({ info, columns, defaultPageSize, rowsPerPageOptions }) {
   const [data, setData] = useState([]);
 
   const [page, setPage] = useState(1); // 1 indexed
   const [pageSize, setPageSize] = useState(defaultPageSize ?? 10);
 
+  setData(info);
   // Now notice the dependency array contains route, page, pageSize, since we
   // need to re-fetch the data if any of these values change
-  useEffect(() => {
-    fetch(`${route}?page=${page}&page_size=${pageSize}`)
-      .then((res) => res.json())
-      .then((resJson) => setData(resJson));
-  }, [route, page, pageSize]);
+  // useEffect(() => {
+  //   fetch(`${route}?page=${page}&page_size=${pageSize}`)
+  //     .then(res => res.json())
+  //     .then(resJson => setData(resJson));
+  // }, [route, page, pageSize]);
 
   const handleChangePage = (e, newPage) => {
     // Can always go to previous page (TablePagination prevents negative pages)
@@ -43,7 +31,7 @@ export default function LazyTable({
       // Note that we set newPage + 1 since we store as 1 indexed but the default pagination gives newPage as 0 indexed
       setPage(newPage + 1);
     }
-  };
+  }
 
   const handleChangePageSize = (e) => {
     // when handling events such as changing a selection box or typing into a text box,
@@ -51,47 +39,45 @@ export default function LazyTable({
     const newPageSize = e.target.value;
 
     // TODO (TASK 18): set the pageSize state variable and reset the current page to 1
-  };
+    setPageSize(newPageSize);
+    setPage(1);
+  }
 
   const defaultRenderCell = (col, row) => {
     return <div>{row[col.field]}</div>;
-  };
+  }
 
   return (
     <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
-            {columns.map((col) => (
-              <TableCell key={col.headerName}>{col.headerName}</TableCell>
-            ))}
+            {columns.map(col => <TableCell key={col.headerName}>{col.headerName}</TableCell>)}
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((row, idx) => (
+          {data.map((row, idx) =>
             <TableRow key={idx}>
-              {
+              {columns.map(col => 
                 // TODO (TASK 19): the next 3 lines of code render only the first column. Wrap this with another map statement to render all columns.
                 // Hint: look at how we structured the map statement to render all the table headings within the <TableHead> element
-                <TableCell key={columns[0].headerName}>
+                <TableCell key={col.headerName}>
                   {/* Note the following ternary statement renders the cell using a custom renderCell function if defined, or defaultRenderCell otherwise */}
-                  {columns[0].renderCell
-                    ? columns[0].renderCell(row)
-                    : defaultRenderCell(columns[0], row)}
+                  {col.renderCell ? col.renderCell(row) : defaultRenderCell(col, row)}
                 </TableCell>
-              }
+              )}
             </TableRow>
-          ))}
+          )}
         </TableBody>
         <TablePagination
           rowsPerPageOptions={rowsPerPageOptions ?? [5, 10, 25]}
-          count={-1}
-          rowsPerPage={pageSize}
-          page={page - 1}
+          count={10}
+          rowsPerPage={10}
+          page={10}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangePageSize}
         />
       </Table>
     </TableContainer>
-  );
+  )
 }

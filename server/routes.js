@@ -303,12 +303,11 @@ const top_salesperson = async function (req, res) {
     connection.query(
       // returns the top salesperson per city (orders by total_sales desc, so topsalesperson in company is on top)
       `
-      SELECT ci.cityname,  e.employeeid, e.firstname, e.lastname, to_char(ROUND(SUM(s.totalprice)::numeric, 0), 'FM9,999,999,999,999') AS total_sales, RANK() OVER (PARTITION BY ci.cityname ORDER BY SUM(s.totalprice)DESC) AS rank_in_city
-      FROM sales s JOIN employees e on s.salespersonid=e.employeeid
-          JOIN cities ci ON e.cityid=ci.cityid
-      GROUP BY ci.cityname, e.employeeid, e.firstname, e.lastname
+      SELECT ci.cityname, e.firstname, e.lastname, to_char(ROUND(ts.total_sales::numeric, 0), 'FM9,999,999,999,999') AS total_sales
+      FROM top_sales ts JOIN employees e ON ts.salespersonid=e.employeeid JOIN cities ci ON ts.cityid=ci.cityid
+      GROUP BY ci.cityname, e.firstname, e.lastname, ts.total_sales
       ORDER BY total_sales DESC
-      LIMIT 5
+      LIMIT 5;
     `,
       (err, data) => {
         if (err) {
