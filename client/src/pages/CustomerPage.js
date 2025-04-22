@@ -10,18 +10,32 @@ export default function CustomerPage() {
   const [data, setData] = useState([]);
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
+  const [error, setError] = useState('');
 
   const search = () => {
     if (!firstname || !lastname) {
-      setData([]); // Clear results if input is invalid
+      setData([]); 
+      setError('Please enter both first and last name.');
       return;
     }
+
+    setError('');
 
     fetch(`http://${config.server_host}:${config.server_port}/customers/search?firstname=${firstname}&lastname=${lastname}`)
       .then(res => res.json())
       .then(resJson => {
-        const customersWithId = resJson.map((c) => ({ id: c.customerid, ...c }));
-        setData(customersWithId);
+        if (resJson.length === 0) {
+          setData([]);
+          setError('No customers found matching your search.');
+        } else {
+          const customersWithId = resJson.map((c) => ({ id: c.customerid, ...c }));
+          setData(customersWithId);
+          setError('');
+        }
+      })
+      .catch(err => {
+        setData([]);
+        setError('Failed to fetch customers.');
       });
   };
 
@@ -58,6 +72,12 @@ export default function CustomerPage() {
       <Button onClick={search} variant="contained" style={{ marginTop: '1rem' }}>
         Search
       </Button>
+
+      {error && (
+        <div style={{ color: 'red', marginTop: '1rem' }}>
+          {error}
+        </div>
+      )}
 
       <h2 style={{ marginTop: '2rem' }}>Results</h2>
       <DataGrid
