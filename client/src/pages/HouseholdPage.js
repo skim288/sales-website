@@ -31,6 +31,7 @@ import { formatDuration } from "../helpers/formatter";
 const config = require("../config.json");
 
 export default function HouseholdPage() {
+  const [pageSize, setPageSize] = useState(10);
   const [household, setHousehold] = useState([]);
   const [zip, setZip] = useState("");
   const [year, setYear] = useState("");
@@ -51,6 +52,15 @@ export default function HouseholdPage() {
       .then((res) => res.json())
       .then((resJson) => setHousehold(resJson));
   };
+
+  const columns = [
+    { field: 'cityname', headerName: 'City Name', flex: 1, headerAlign: 'center', align: 'center' },
+    { field: 'zipcode', headerName: 'ZIP Code', flex: 1, headerAlign: 'center', align: 'center' },
+    { field: 'household_count', headerName: 'Household Count', flex: 1, type: 'number',  headerAlign: 'center', align: 'center' },
+    { field: 'mean_income', headerName: 'Mean Income', type: 'number', flex: 1, headerAlign: 'center', align: 'center' },
+  ];
+
+  
 
   return (
     <Container>
@@ -117,7 +127,19 @@ export default function HouseholdPage() {
         Top Households
       </Typography>
 
-      <TableContainer component={Paper}>
+      <h2 style={{ marginTop: '2rem' }}>Results</h2>
+      <DataGrid
+        rows={household}
+        columns={columns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[5, 10, 25]}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        autoHeight
+        getRowId={(row) => row.zipcode}
+      />
+
+
+      {/* <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -138,7 +160,9 @@ export default function HouseholdPage() {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer> */}
+
+
     </Container>
   );
 }

@@ -32,6 +32,7 @@ const config = require('../config.json');
 
 
 export default function SongsPage() {
+    const [pageSize, setPageSize] = useState(10);
     const [salesperson, setSalesperson] = useState([]);
     const [zip, setZip] = useState('');
     const [category, setCategory] = useState('');
@@ -54,14 +55,12 @@ export default function SongsPage() {
           .then(resJson => setSalesperson(resJson));
     };
 
-    const categoryOptions = [
-        'All Categories',
-        'Electronics',
-        'Furniture',
-        'Clothing',
-        'Books',
-
-      ];
+    const columns = [
+      { field: 'employeeid', headerName: 'Employee ID', flex: 1, headerAlign: 'center', align: 'center' },
+      { field: 'firstname', headerName: 'First Name', flex: 1, headerAlign: 'center', align: 'center' },
+      { field: 'lastname', headerName: 'Last Name', flex: 1, headerAlign: 'center', align: 'center' },
+      { field: 'total_sales', headerName: 'Total Sales', type: 'number', flex: 1, headerAlign: 'center', align: 'center' },
+    ];
           
     return (
         <Container>
@@ -129,30 +128,17 @@ export default function SongsPage() {
         Top Salesperson
     </Typography>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Employee ID</TableCell>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell align="right">Total Sales</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {salesperson.map(person => (
-              <TableRow key={person.employeeid}>
-                <TableCell>{person.employeeid}</TableCell>
-                <TableCell>{person.firstname}</TableCell>
-                <TableCell>{person.lastname}</TableCell>
-                <TableCell align="right">{person.total_sales}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <h2 style={{ marginTop: '2rem' }}>Results</h2>
+      <DataGrid
+        rows={salesperson}
+        columns={columns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[5, 10, 25]}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        autoHeight
+        getRowId={(row) => row.employeeid}
+      />
 
-          
 
         </Container>
       );
