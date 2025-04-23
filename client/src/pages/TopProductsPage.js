@@ -1,23 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import {
-  Container,
-  Grid,
-  Slider,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Typography,
-} from "@mui/material";
+import {Container, Grid, FormControl, InputLabel, Select, MenuItem,Button} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import TextField from "@mui/material/TextField";
 import ListItemText from "@mui/material/ListItemText";
@@ -30,7 +13,6 @@ export default function TopProductsPage() {
   const [pageSize, setPageSize] = useState(10);
   const [products, setProducts] = useState([]);
   const [zip, setZip] = useState('');
-  const [year, setYear] = useState('');
   const { categoryid } = useParams();
   const [searchParams] = useSearchParams();
   const categoryname = searchParams.get('categoryname');
@@ -90,8 +72,9 @@ export default function TopProductsPage() {
         </Grid>
       </Grid>
 
+
       <Grid item xs={12} md={4}>
-        <FormControl  sx={{width: '65.5%'}}>
+        <FormControl sx={{ width: "65.5%" }}>
           <InputLabel id="month_label"> Select Month</InputLabel>
           <Select
             labelId="month_label"
@@ -104,7 +87,7 @@ export default function TopProductsPage() {
               <Checkbox checked={month === ""} sx={{ p: 0, mr: 1 }} />
               <ListItemText primary="— None —" />
             </MenuItem>
-            {months.map(({label, value}) => (
+            {months.map(({ label, value }) => (
               <MenuItem key={value} value={value}>
                 <Checkbox checked={month === value} sx={{ p: 0, mr: 1 }} />
                 <ListItemText primary={label} />
@@ -114,22 +97,18 @@ export default function TopProductsPage() {
         </FormControl>
       </Grid>
 
-      
+
       <Button
         onClick={() => search()}
-        variant="contained"  style={{ marginTop: '1rem' }}
+        variant="contained"
+        style={{ marginTop: "1rem" }}
       >
         Search
       </Button>
-      {error && (
-          <div style={{ color: 'red', marginTop: '1rem' }}>
-            {error}
-          </div>
-        )}
-      
-      
+      {error && <div style={{ color: "red", marginTop: "1rem" }}>{error}</div>}
 
-      <h2 style={{ marginTop: '2rem' }}> Top {categoryname} Product Results</h2>
+
+      <h2 style={{ marginTop: "2rem" }}> Top {categoryname} Product Results</h2>
       <DataGrid
         rows={products}
         columns={columns}
@@ -139,8 +118,6 @@ export default function TopProductsPage() {
         autoHeight
         getRowId={(row) => row.productid}
       />
-
-
     </Container>
   );
 }

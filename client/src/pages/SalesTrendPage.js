@@ -66,10 +66,11 @@ export default function SalesChartPage() {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>Monthly Sales by Category</Typography>
+      <Typography variant="h4" gutterBottom>
+        Monthly Sales by Category
+      </Typography>
 
       <Grid container spacing={4} alignItems="center">
-
         <Grid item xs={12} md={4}>
           <FormControl fullWidth>
             <InputLabel id="category-label">Select Product Category</InputLabel>
@@ -77,14 +78,14 @@ export default function SalesChartPage() {
               labelId="category-label"
               value={category}
               label="Product Category"
-              onChange={e => setCategory(e.target.value)}
-              renderValue={selected => selected || '— None —'}
+              onChange={(e) => setCategory(e.target.value)}
+              renderValue={(selected) => selected || "— None —"}
             >
               <MenuItem value="">
-                <Checkbox checked={category === ''} sx={{ p: 0, mr: 1 }} />
+                <Checkbox checked={category === ""} sx={{ p: 0, mr: 1 }} />
                 <ListItemText primary="— None —" />
               </MenuItem>
-              {categories.map(item => (
+              {categories.map((item) => (
                 <MenuItem key={item} value={item}>
                   <Checkbox checked={category === item} sx={{ p: 0, mr: 1 }} />
                   <ListItemText primary={item} />
@@ -94,13 +95,16 @@ export default function SalesChartPage() {
           </FormControl>
         </Grid>
 
+
         <Grid item xs={12} md={2}>
-          <Button variant="contained" fullWidth onClick={search}>Search</Button>
+          <Button variant="contained" fullWidth onClick={search}>
+            Search
+          </Button>
         </Grid>
 
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom>
-            {title || 'Sales Overview'}
+            {title || "Sales Overview"}
           </Typography>
           <ResponsiveContainer width="100%" height={400}>
             <BarChart
@@ -111,29 +115,31 @@ export default function SalesChartPage() {
               <XAxis dataKey="sales_month" />
               <YAxis />
               <Tooltip />
-                <Bar
+              <Bar
                 dataKey="sales"
                 fill="#1976d2"
                 label={({ x, y, value }) => (
-                    <text x={x + 10} y={y - 5} fill="#000" fontSize={12}>{value}</text>
+                  <text x={x + 10} y={y - 5} fill="#000" fontSize={12}>
+                    {value}
+                  </text>
                 )}
-                />
+              />
             </BarChart>
           </ResponsiveContainer>
         </Grid>
       </Grid>
 
-       <h2 style={{ marginTop: '2rem' }}>Sales Distribution</h2>
-          <DataGrid
-            rows={resistance}
-            columns={columns}
-            pageSize={pageSize}
-            rowsPerPageOptions={[5, 10, 25]}
-            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            autoHeight
-            getRowId={(row) => row.categoryname}
-          />
 
+      <h2 style={{ marginTop: "2rem" }}>Sales Distribution</h2>
+      <DataGrid
+        rows={resistance}
+        columns={columns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[5, 10, 25]}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        autoHeight
+        getRowId={(row) => row.categoryname}
+      />
     </Container>
   );
 }

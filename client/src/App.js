@@ -7,7 +7,6 @@ import { createTheme } from "@mui/material/styles";
 import { AuthProvider, useAuth } from './components/AuthContext';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
-import SalesPage from './pages/SalesPage';
 import CustomerPage from './pages/CustomerPage';
 import LoginPage from './pages/LoginPage';
 import SalespersonPage from './pages/SalespersonPage';

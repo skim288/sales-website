@@ -109,7 +109,6 @@ const top_products = async function (req, res) {
   const zip = req.query.zip ?? "";
   const month = req.query.month ?? "";
   
-  // Top 5 products filtered by zipcode
   if (zip && month) {
     connection.query(
       `
@@ -137,7 +136,7 @@ const top_products = async function (req, res) {
       FROM sales s JOIN products p ON s.productid=p.productid
             JOIN employees e ON e.employeeid=s.salespersonid
             JOIN cities c ON c.cityid=e.cityid
-      WHERE c.zipcode = '%${zip}%' AND p.categoryid='${req.params.categoryid}'
+      WHERE c.zipcode = '${zip}' AND p.categoryid='${req.params.categoryid}'
       GROUP BY p.productid, p.productname
       ORDER BY SUM(s.totalprice) DESC
     `,
@@ -456,49 +455,6 @@ const highest_households = async function (req, res) {
 
 };
 
-const household_mean_income = async function (req, res) {
-  const zip = req.query.zip?? "";
-  
-  // mean household income based on selected city
-  if (zip) {
-    connection.query(
-      `
-      SELECT c.cityname, c.zipcode, to_char(SUM(z.familiesmeanincome), 'FM9,999,999,999,999') AS mean_income
-      FROM zipcodedemographics z JOIN cities c on z.zip=c.zipcode
-      WHERE c.zipcode = '%${zip}%'
-      GROUP BY c.cityname, c.zipcode
-    `,
-      (err, data) => {
-        if (err) {
-          console.log(err);
-          res.json([]);
-        } else {
-          res.json(data.rows);
-        }
-      }
-    );
-
-    // DEFAULT: top 10 cities with the highest number of household 
-  } else if(!zip){
-    connection.query(
-      `
-      SELECT c.cityname, c.zipcode, to_char(SUM(z.familiesmeanincome), 'FM9,999,999,999,999')  AS mean_income
-      FROM zipcodedemographics z JOIN cities c on z.zip=c.zipcode
-      GROUP BY c.cityname, c.zipcode
-      ORDER BY SUM(z.familiesmeanincome) DESC
-      LIMIT 10
-    `,
-      (err, data) => {
-        if (err) {
-          console.log(err);
-          res.json([]);
-        } else {
-          res.json(data.rows);
-        }
-      }
-    );
-  }
-};
 
 const search_employee_email = async function(req, res) {
   const email = req.query.email ?? "";
@@ -617,12 +573,12 @@ const product_resistance = async function(req, res) {
 
 
 module.exports = {
+
   searchCustomers,
   top_products,
   top_product_categories,
   top_salesperson,
   highest_households,
-  household_mean_income,
   search_employee_email,
   product_categories,
   searchSales,

@@ -16,7 +16,6 @@ app.get('/top_products', routes.top_products);
 app.get('/top_products/:categoryid', routes.top_products);
 app.get('/top_salesperson', routes.top_salesperson);
 app.get('/highest_households', routes.highest_households);
-app.get('/household_mean_income', routes.household_mean_income);
 app.get('/search_employee_email', routes.search_employee_email);
 app.get('/product_categories', routes.product_categories);
 app.get('/monthly_sales_by_category', routes.monthly_sales_by_category);

@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 
-import {
-  Container,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-} from "@mui/material";
+import {Container, Grid, FormControl, InputLabel, Select, MenuItem, Button} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import TextField from "@mui/material/TextField";
 import ListItemText from "@mui/material/ListItemText";
@@ -38,13 +30,14 @@ export default function HouseholdPage() {
     )
       .then((res) => res.json())
       .then((resJson) => {
-        if(resJson.length === 0){
-          setError("ZIP code is invalid.")
-        } else{
+        if (resJson.length === 0) {
+          setError("ZIP code is invalid.");
+        } else {
           setHousehold(resJson);
         }
-      })
+      });
   };
+
 
   const columns = [
     { field: 'cityname', headerName: 'City Name', flex: 1, headerAlign: 'center', align: 'center' },
@@ -53,7 +46,7 @@ export default function HouseholdPage() {
     { field: 'mean_income', headerName: 'Mean Income', type: 'number', flex: 1, headerAlign: 'center', align: 'center' },
   ];
 
-  
+  // Columns to be displayed in results table.
 
   return (
     <Container>
@@ -69,8 +62,9 @@ export default function HouseholdPage() {
         </Grid>
       </Grid>
 
+
       <Grid item xs={12} md={4}>
-        <FormControl  sx={{width: '65.5%'}}>
+        <FormControl sx={{ width: "65.5%" }}>
           <InputLabel id="category-label">Select Year</InputLabel>
           <Select
             labelId="category-label"
@@ -105,22 +99,18 @@ export default function HouseholdPage() {
         </FormControl>
       </Grid>
 
-      
-        <Button
-          onClick={() => search()}
-          variant="contained"  style={{ marginTop: '1rem' }}
-        >
-          Search
-        </Button>
-        {error && (
-            <div style={{ color: 'red', marginTop: '1rem' }}>
-              {error}
-            </div>
-        )}
 
-     
+      <Button
+        onClick={() => search()}
+        variant="contained"
+        style={{ marginTop: "1rem" }}
+      >
+        Search
+      </Button>
+      {error && <div style={{ color: "red", marginTop: "1rem" }}>{error}</div>}
 
-      <h2 style={{ marginTop: '2rem' }}>Top Households Results</h2>
+
+      <h2 style={{ marginTop: "2rem" }}>Top Households Results</h2>
       <DataGrid
         rows={household}
         columns={columns}
@@ -130,8 +120,6 @@ export default function HouseholdPage() {
         autoHeight
         getRowId={(row) => row.zipcode}
       />
-
-
     </Container>
   );
 }
