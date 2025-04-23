@@ -120,7 +120,6 @@ const top_products = async function (req, res) {
       WHERE c.zipcode = '${zip}' AND EXTRACT(MONTH FROM s.salesdate) = '${month}' AND p.categoryid='${req.params.categoryid}'
       GROUP BY p.productid, p.productname
       ORDER BY SUM(s.totalprice) DESC
-      LIMIT 5
     `,
       (err, data) => {
         if (err) {
@@ -141,7 +140,6 @@ const top_products = async function (req, res) {
       WHERE c.zipcode = '%${zip}%' AND p.categoryid='${req.params.categoryid}'
       GROUP BY p.productid, p.productname
       ORDER BY SUM(s.totalprice) DESC
-      LIMIT 5
     `,
       (err, data) => {
         if (err) {
@@ -164,7 +162,6 @@ const top_products = async function (req, res) {
       WHERE EXTRACT(MONTH FROM s.salesdate) = '${month}' AND p.categoryid='${req.params.categoryid}'
       GROUP BY p.productid, p.productname
       ORDER BY SUM(s.totalprice) DESC
-      LIMIT 5
     `,
       (err, data) => {
         if (err) {
@@ -183,7 +180,6 @@ const top_products = async function (req, res) {
       WHERE p.categoryid='${req.params.categoryid}'
       GROUP BY p.productid, p.productname
       ORDER BY SUM(s.totalprice) DESC
-      LIMIT 5
     `,
       (err, data) => {
         if (err) {
