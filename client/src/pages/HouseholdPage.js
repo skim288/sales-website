@@ -3,31 +3,17 @@ import { useEffect, useState } from "react";
 import {
   Container,
   Grid,
-  Slider,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Button,
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
 
-import SongCard from "../components/SongCard";
-import { formatDuration } from "../helpers/formatter";
 const config = require("../config.json");
 
 export default function HouseholdPage() {
@@ -144,30 +130,6 @@ export default function HouseholdPage() {
         autoHeight
         getRowId={(row) => row.zipcode}
       />
-
-
-      {/* <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>City Name</TableCell>
-              <TableCell>ZIP Code</TableCell>
-              <TableCell>Number of Households</TableCell>
-              <TableCell>Mean Income</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {household.map((house) => (
-              <TableRow key={house.zipcode}>
-                <TableCell>{house.cityname}</TableCell>
-                <TableCell>{house.zipcode}</TableCell>
-                <TableCell>{house.household_count}</TableCell>
-                <TableCell>{house.mean_income}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer> */}
 
 
     </Container>

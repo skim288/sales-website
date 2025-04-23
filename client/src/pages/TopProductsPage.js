@@ -19,15 +19,11 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
 
-import SongCard from "../components/SongCard";
-import { formatDuration } from "../helpers/formatter";
+
 const config = require("../config.json");
 
 export default function TopProductsPage() {
@@ -143,25 +139,6 @@ export default function TopProductsPage() {
         autoHeight
         getRowId={(row) => row.productid}
       />
-
-      {/* <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Product Name</TableCell>
-              <TableCell>Total Sales</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.productid}>
-                <TableCell>{product.productname}</TableCell>
-                <TableCell>{product.total_sales}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer> */}
 
 
     </Container>

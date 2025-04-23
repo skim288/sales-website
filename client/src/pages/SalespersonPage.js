@@ -8,23 +8,12 @@ import {
     Select,
     MenuItem,
     Button,
-    TableContainer,
-    Paper,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    Typography
   } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import Autocomplete from '@mui/material/Autocomplete';
 import TextField     from '@mui/material/TextField';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
-import LazyTable from '../components/LazyTable'
+
 
 
 import SongCard from '../components/SongCard';
@@ -46,10 +35,6 @@ export default function SongsPage() {
           .then(resJson => setSalesperson(resJson));
       }, []);
     const search = () => {
-        // let url = `http://${config.server_host}:${config.server_port}/top_salesperson?zip=${zip}`;
-        // if (category) {
-        //     url += `&category=${encodeURIComponent(category)}`;
-        // }
         fetch(`http://${config.server_host}:${config.server_port}/top_salesperson?zip=${zip}` +
             `&category=${category}`
         )
@@ -126,8 +111,6 @@ export default function SongsPage() {
           
          
         
-          
-  
 
     <h2 style={{ marginTop: '2rem' }}>Top Salesperson Results</h2>
       <DataGrid
