@@ -24,12 +24,16 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
+import { DataGrid } from "@mui/x-data-grid";
+
 const config = require('../config.json');
 
 export default function SalesChartPage() {
   const [category, setCategory] = useState('');
   const [salesData, setSalesData] = useState([]);
   const [title, setTitle] = useState('');
+  const [resistance, setResistance] = useState('');
+  const [pageSize, setPageSize] = useState(10);
 
   // Fetch all sales data on mount
   useEffect(() => {
@@ -42,11 +46,23 @@ export default function SalesChartPage() {
     fetch(`http://${config.server_host}:${config.server_port}/monthly_sales_by_category?category=${category}`)
       .then(res => res.json())
       .then(resJson => setSalesData(resJson));
+
+    fetch(`http://${config.server_host}:${config.server_port}/product_resistance?category=${category}`)
+    .then(res => res.json())
+    .then(resJson => setResistance(resJson));
   };
 
   const categories = [
     'Confections', 'Shell Fish', 'Cereals', 'Dairy', 'Beverages',
     'Seafood', 'Meat', 'Grain', 'Poultry', 'Snails', 'Produce'
+  ];
+
+  const columns = [
+    { field: 'categoryname', headerName: 'Category', flex: 1, headerAlign: 'center', align: 'center' },
+    { field: 'resistance_perc', headerName: 'Durable', flex: 1, headerAlign: 'center', align: 'center' },
+    { field: 'weak_perc', headerName: 'Weak', flex: 1, headerAlign: 'center', align: 'center' },
+    { field: 'unknown_perc', headerName: 'Unknown', flex: 1, headerAlign: 'center', align: 'center' },
+    { field: 'total_sales', headerName: 'Total Sales', type: 'number', flex: 1, headerAlign: 'center', align: 'center' },
   ];
 
   return (
@@ -107,6 +123,18 @@ export default function SalesChartPage() {
           </ResponsiveContainer>
         </Grid>
       </Grid>
+
+       <h2 style={{ marginTop: '2rem' }}>Sales Distribution</h2>
+          <DataGrid
+            rows={resistance}
+            columns={columns}
+            pageSize={pageSize}
+            rowsPerPageOptions={[5, 10, 25]}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            autoHeight
+            getRowId={(row) => row.categoryname}
+          />
+
     </Container>
   );
 }

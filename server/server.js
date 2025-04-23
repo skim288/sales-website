@@ -20,6 +20,7 @@ app.get('/household_mean_income', routes.household_mean_income);
 app.get('/search_employee_email', routes.search_employee_email);
 app.get('/product_categories', routes.product_categories);
 app.get('/monthly_sales_by_category', routes.monthly_sales_by_category);
+app.get('/product_resistance', routes.product_resistance);
 
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)

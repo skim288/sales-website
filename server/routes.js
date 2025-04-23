@@ -388,7 +388,7 @@ const highest_households = async function (req, res) {
       WHERE z.year = 2021 AND z.familiesmeanincome IS NOT NULL
       ORDER BY mean_income DESC
       LIMIT 10
-    `, 
+    `,
       (err, data) => {
         if (err) {
           console.log(err);
@@ -586,7 +586,38 @@ const monthly_sales_by_category = async function(req, res) {
     });
   }
 }
- 
+
+const product_resistance = async function(req, res) {
+  const category = req.query.category ?? "";
+
+  connection.query(`
+    SELECT
+    c.categoryname,
+    ROUND((SUM(CASE WHEN p.resistant = 'Durable' THEN s.quantity * p.price ELSE 0 END)
+          / NULLIF(SUM(s.quantity * p.price), 0))::numeric, 2) AS resistance_perc,
+    ROUND((SUM(CASE WHEN p.resistant = 'Weak' THEN s.quantity * p.price ELSE 0 END)
+          / NULLIF(SUM(s.quantity * p.price), 0))::numeric, 2) AS weak_perc,
+    ROUND((SUM(CASE WHEN p.resistant = 'Unknown' THEN s.quantity * p.price ELSE 0 END)
+          / NULLIF(SUM(s.quantity * p.price), 0))::numeric, 2) AS unknown_perc,
+    to_char(ROUND(SUM(s.quantity * p.price)::numeric, 0), 'FM9,999,999,999,999') AS total_sales
+    FROM sales s
+    INNER JOIN products p ON s.productid = p.productid
+    INNER JOIN categories c ON p.categoryid = c.categoryid
+    WHERE c.categoryname ILIKE '${category}'
+    GROUP BY c.categoryname
+    ORDER BY total_sales DESC;
+  `, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json([]);
+    }
+    res.json(data.rows);
+  });
+  
+}
+
+
+
 
 
 module.exports = {
@@ -608,5 +639,6 @@ module.exports = {
   search_employee_email,
   product_categories,
   searchSales,
-  monthly_sales_by_category
+  monthly_sales_by_category,
+  product_resistance
 }
