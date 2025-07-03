@@ -1,26 +1,17 @@
 steps:
-  # Build the Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'build',
-      '-t', 'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
-      '.'
-    ]
-  # Push the image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'push',
-      'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA'
-    ]
-  # Deploy to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
-    args: [
-      'run', 'deploy', 'sales-website-service',
-      '--image', 'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
-      '--region', 'us-west2',
-      '--platform', 'managed',
-      '--allow-unauthenticated'
-    ]
-images:
-  - 'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA'
+  # Build step (if needed)
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['install']
+  
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['run', 'build']
+  
+  # Deploy to Cloud Storage
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: ['-m', 'rsync', '-r', '-c', '-d', './dist/', 'gs://YOUR-BUCKET-NAME']
+
+# Create bucket if it doesn't exist
+options:
+  logging: CLOUD_LOGGING_ONLY
