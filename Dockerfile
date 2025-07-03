@@ -1,31 +1,24 @@
-# Step 1: Build React app
-FROM node:20 AS build
+FROM node:18-alpine
+
+# Set working directory
 WORKDIR /app
 
-# Copy React app
-COPY client ./client
-WORKDIR /app/client
+# Copy package.json files
+COPY package*.json ./
+COPY server/package*.json ./server/
 
-# Install and build React app
+# Install dependencies
 RUN npm install
+RUN cd server && npm install --only=production
+
+# Copy source code
+COPY . .
+
+# Build React app
 RUN npm run build
 
-# Step 2: Prepare server
-FROM node:20 AS server
-WORKDIR /app
-
-# Copy server code
-COPY server ./server
-
-# Copy React build to server public folder
-COPY --from=build /app/client/build ./server/build
-
-# Install server dependencies
-WORKDIR /app/server
-RUN npm install
-
-# Expose server port (change if needed)
+# Expose port
 EXPOSE 8080
 
-# Start your server (update this if your entry point isn't index.js)
-CMD ["node", "index.js"]
+# Start the server
+CMD ["npm", "run", "start:prod"]
