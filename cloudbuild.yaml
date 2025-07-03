@@ -1,52 +1,26 @@
-options:
-  logStreamingOption: CLOUD_LOGGING_ONLY
-
 steps:
-  
-
-# 1. Install dependencies & build React frontend
-  - name: 'gcr.io/cloud-builders/npm'
-    dir: 'frontend'              # adjust if your React code is elsewhere
-    args: ['install']
-  - name: 'gcr.io/cloud-builders/npm'
-    dir: 'frontend'
-    args: ['run', 'build']
-
-  # 2. Build the Docker image (Node.js backend + built frontend)
+  # Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      [
-        'build',
-        '-t',
-        'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
-        '.',
-      ]
-
-  # 3. Push the image to Artifact Registry
+    args: [
+      'build',
+      '-t', 'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
+      '.'
+    ]
+  # Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      [
-        'push',
-        'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
-      ]
-
-  # 4. Deploy to Cloud Run (managed)
+    args: [
+      'push',
+      'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA'
+    ]
+  # Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
-    args:
-      [
-        'run',
-        'deploy',
-        'sales-website-service',                             # your service name
-        '--image',
-        'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
-        '--platform',
-        'managed',
-        '--region',
-        'us-west2',
-        '--allow-unauthenticated',
-      ]
-
-# Use $SHORT_SHA for immutable tagging
+    args: [
+      'run', 'deploy', 'sales-website-service',
+      '--image', 'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
+      '--region', 'us-west2',
+      '--platform', 'managed',
+      '--allow-unauthenticated'
+    ]
 images:
   - 'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA'
