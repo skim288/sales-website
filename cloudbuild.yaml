@@ -1,5 +1,10 @@
+options:
+  logStreamingOption: CLOUD_LOGGING_ONLY
+
 steps:
-  # 1. Install dependencies & build React frontend
+  
+
+# 1. Install dependencies & build React frontend
   - name: 'gcr.io/cloud-builders/npm'
     dir: 'frontend'              # adjust if your React code is elsewhere
     args: ['install']
