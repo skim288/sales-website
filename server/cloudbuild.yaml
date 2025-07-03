@@ -1,12 +1,16 @@
 # cloudbuild.yaml
+options:
+  # write build logs to Cloud Logging only (no GCS bucket needed)
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
-  # 1. Build the container image
+  # 1. Build the container image in Artifact Registry (us-west2)
   - name: 'gcr.io/cloud-builders/docker'
     args:
       [
         'build',
         '-t',
-        'us-central1-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
+        'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
         '.',
       ]
 
@@ -15,25 +19,25 @@ steps:
     args:
       [
         'push',
-        'us-central1-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
+        'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
       ]
 
-  # 3. Deploy to Cloud Run
+  # 3. Deploy to Cloud Run in us-west2
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       [
         'run',
         'deploy',
-        'sales-website-service',                            # service name
+        'sales-website-service',    # your service name
         '--image',
-        'us-central1-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
+        'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
         '--region',
-        'us-central1',
+        'us-west2',
         '--platform',
         'managed',
         '--allow-unauthenticated',
       ]
 
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA'
+  - 'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA'
