@@ -1,10 +1,13 @@
-# cloudbuild.yaml
-options:
-  # write build logs to Cloud Logging only (no GCS bucket needed)
-  logging: CLOUD_LOGGING_ONLY
-
 steps:
-  # 1. Build the container image in Artifact Registry (us-west2)
+  # 1. Install dependencies & build React frontend
+  - name: 'gcr.io/cloud-builders/npm'
+    dir: 'frontend'              # adjust if your React code is elsewhere
+    args: ['install']
+  - name: 'gcr.io/cloud-builders/npm'
+    dir: 'frontend'
+    args: ['run', 'build']
+
+  # 2. Build the Docker image (Node.js backend + built frontend)
   - name: 'gcr.io/cloud-builders/docker'
     args:
       [
@@ -14,7 +17,7 @@ steps:
         '.',
       ]
 
-  # 2. Push to Artifact Registry
+  # 3. Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       [
@@ -22,22 +25,23 @@ steps:
         'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
       ]
 
-  # 3. Deploy to Cloud Run in us-west2
+  # 4. Deploy to Cloud Run (managed)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       [
         'run',
         'deploy',
-        'sales-website-service',    # your service name
+        'sales-website-service',                             # your service name
         '--image',
         'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA',
-        '--region',
-        'us-west2',
         '--platform',
         'managed',
+        '--region',
+        'us-west2',
         '--allow-unauthenticated',
       ]
 
+# Use $SHORT_SHA for immutable tagging
 images:
   - 'us-west2-docker.pkg.dev/$PROJECT_ID/sales-website-repo/sales-website:$SHORT_SHA'
