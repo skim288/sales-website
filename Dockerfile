@@ -1,24 +1,23 @@
-FROM node:18-alpine
-
-# Set working directory
-WORKDIR /app
-
-# Copy package.json files
-COPY package*.json ./
-COPY server/package*.json ./server/
-
-# Install dependencies
-RUN npm install
-RUN cd server && npm install --only=production
-
-# Copy source code
-COPY . .
-
-# Build React app
+# 1. Build React frontend
+FROM node:18 AS client-build
+WORKDIR /app/client
+COPY client/package*.json ./
+RUN npm ci
+COPY client/ ./
 RUN npm run build
 
-# Expose port
-EXPOSE 8080
+# 2. Build backend and copy in frontend build
+FROM node:18 AS server-build
+WORKDIR /app/server
+COPY server/package*.json ./
+RUN npm ci
+COPY server/ ./
+# Copy static assets from client
+COPY --from=client-build /app/client/build ./public
 
-# Start the server
-CMD ["npm", "run", "start:prod"]
+# 3. Final runtime image
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=server-build /app/server ./
+EXPOSE 8080
+CMD ["npm", "start"]
