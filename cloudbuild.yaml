@@ -1,31 +1,24 @@
 steps:
-  # Build & push image
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      [
-        'build',
-        '-t',
-        'us-west2-docker.pkg.dev/$PROJECT_ID/my-repo/fullstack-app:$SHORT_SHA',
-        '.'
-      ]
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      [
-        'push',
-        'us-west2-docker.pkg.dev/$PROJECT_ID/my-repo/fullstack-app:$SHORT_SHA'
-      ]
-
-  # Deploy to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
-    args:
-      [
-        'run', 'deploy', 'fullstack-service',
-        '--image', 'us-west2-docker.pkg.dev/$PROJECT_ID/my-repo/fullstack-app:$SHORT_SHA',
-        '--region', 'us-west2',
-        '--platform', 'managed',
-        '--allow-unauthenticated'
-      ]
-
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - build
+  - '-t'
+  - '$REGION-docker.pkg.dev/$PROJECT_ID/backend-repo/server:$SHORT_SHA'
+  - './server'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - push
+  - '$REGION-docker.pkg.dev/$PROJECT_ID/backend-repo/server:$SHORT_SHA'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - build
+  - '-t'
+  - '$REGION-docker.pkg.dev/$PROJECT_ID/frontend-repo/client:$SHORT_SHA'
+  - './client'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - push
+  - '$REGION-docker.pkg.dev/$PROJECT_ID/frontend-repo/client:$SHORT_SHA'
 images:
-  - 'us-west2-docker.pkg.dev/$PROJECT_ID/my-repo/fullstack-app:$SHORT_SHA'
+- '$REGION-docker.pkg.dev/$PROJECT_ID/backend-repo/server:$SHORT_SHA'
+- '$REGION-docker.pkg.dev/$PROJECT_ID/frontend-repo/client:$SHORT_SHA'
